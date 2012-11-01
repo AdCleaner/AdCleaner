@@ -5,9 +5,14 @@
 *.war
 *.ear
 
-# eclipse
+# Eclipse
 .metadata
 .settings
 target
 .classpath
 .project
+
+# IntelliJ
+.idea
+META-INF
+*.iml
