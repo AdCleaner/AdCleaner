@@ -4,8 +4,8 @@ import ij.process.ImageProcessor;
 
 import org.apache.log4j.Logger;
 
-import de.lmu.dbs.jfeaturelib.Progress;
-import de.lmu.dbs.jfeaturelib.features.AbstractFeatureDescriptor;
+import de.lmu.ifi.dbs.jfeaturelib.Progress;
+import de.lmu.ifi.dbs.jfeaturelib.features.AbstractFeatureDescriptor;
 
 /**
  * This is a sample descriptor
