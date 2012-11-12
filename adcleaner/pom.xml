@@ -53,6 +53,11 @@
 			<artifactId>xuggle-xuggler</artifactId>
 			<version>5.2</version>
 		</dependency>
+        <dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.3.168</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -66,7 +71,7 @@
 					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
-			<!-- 
+			<!--
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-install-plugin</artifactId>
