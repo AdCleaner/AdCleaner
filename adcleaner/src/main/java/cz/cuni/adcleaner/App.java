@@ -5,6 +5,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -102,8 +103,8 @@ public class App extends JPanel
         {
             String fileName = pathText.getText();
             text.append("Opening: " + fileName + "." + newline);
-            //TODO!!
-            //Try if its a file and assign it to file
+            file = new File(fileName);
+            text.append("File path for textField: " + file.getAbsolutePath() + "." + newline);
         }
     }
     
