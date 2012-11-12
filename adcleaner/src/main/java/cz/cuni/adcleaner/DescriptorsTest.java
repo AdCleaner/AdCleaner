@@ -30,13 +30,13 @@ public class DescriptorsTest {
 		List<FeatureDescriptor> descriptors3 = getAllDescriptors();
 
 		System.out.println("CAC vs CAC        CAC vs Dexter");
-		
+
 		for (int i = 0; i < descriptors1.size(); ++i) {
-			List<double[]> featuresCac1 =runDescriptor("img/cac1.jpg", descriptors1.get(i));
+			List<double[]> featuresCac1 = runDescriptor("img/cac1.jpg", descriptors1.get(i));
 			List<double[]> featuresCac2 = runDescriptor("img/cac2.jpg", descriptors2.get(i));
 			List<double[]> featuresCac3 = runDescriptor("img/dexter1.jpg", descriptors3.get(i));
 
-			System.out.println(hammingSimilarity(featuresCac1, featuresCac2) + "         "+ hammingSimilarity(featuresCac1, featuresCac3));
+			System.out.println(hammingSimilarity(featuresCac1, featuresCac2) + "         " + hammingSimilarity(featuresCac1, featuresCac3));
 		}
 
 	}
@@ -67,7 +67,7 @@ public class DescriptorsTest {
 				add(new Moments());
 				// add(new PHOG());
 				// add(new PolygonEvolution());
-//				add(new Moments());
+				// add(new Moments());
 				add(new Profiles());
 				add(new SURF());
 				// add(new Sift());
@@ -84,9 +84,13 @@ public class DescriptorsTest {
 			double[] ds1 = featuresCac1.get(i);
 			double[] ds2 = featuresCac2.get(i);
 			for (int j = 0; j < ds1.length; ++j) {
-				diff += (ds1[j] != ds2[j]) ? 1 : 0;
+				diff += doubleEquals(ds1[j], ds2[j]) ? 0 : 1;
 			}
 		}
-		return diff / (double)sumAll;
+		return diff / (double) sumAll;
+	}
+
+	public static boolean doubleEquals(double d1, double d2) {
+		return Math.abs(d1 - d2) < 0.5;
 	}
 }
