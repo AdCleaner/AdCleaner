@@ -5,7 +5,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.FileNotFoundException;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -78,6 +77,7 @@ public class App extends JPanel
     }
     
    
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         //Handle open button action
@@ -126,6 +126,7 @@ public class App extends JPanel
     {
         SwingUtilities.invokeLater(new Runnable()
         {
+            @Override
             public void run()
             {
                 //Turn off metal's use of bold fonts
