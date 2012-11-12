@@ -18,15 +18,13 @@
  *******************************************************************************/
 package cz.cuni.adcleaner;
 
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.xuggler.IRational;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.TimeUnit;
-
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.xuggler.IRational;
 
 /**
  * Using {@link IMediaWriter}, takes snapshots of your desktop and
