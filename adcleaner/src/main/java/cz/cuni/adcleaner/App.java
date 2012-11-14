@@ -8,7 +8,7 @@ import java.io.File;
 import javax.swing.*;
 
 /**
- * Runs aplication where you can choose file
+ * Runs application where you can choose file
  *
  */
 public class App extends JPanel
@@ -23,6 +23,18 @@ public class App extends JPanel
     private JFileChooser fc;
     //Maybe public can be
     private File file;
+
+    /**
+     *
+     * @return Returns selected file or null if file doesn't exist
+     */
+    public File getSelectedFile()
+    {
+        if (file.exists())
+            return file;
+
+        return null;
+    }
     
     public App()
     {
@@ -55,6 +67,9 @@ public class App extends JPanel
         text.setMargin(new Insets(5,5,5,5));
         text.setEditable(false);
         JScrollPane logScrollPane = new JScrollPane(text);
+
+        // :-D
+        pathText.setSize(pathText.getWidth(), pathText.getHeight() + 10);
 
         //For layout purposes, put the buttons in a separate panel
         JPanel buttonPanel = new JPanel(); //use FlowLayout
