@@ -87,7 +87,7 @@ public class CaptureScreenToFile
 
         System.out.println("encoded image: " +index);
         
-        // sleep for framerate milliseconds
+        // sleep for frame rate milliseconds
         Thread.sleep((long) (1000 / FRAME_RATE.getDouble()));
 
       }

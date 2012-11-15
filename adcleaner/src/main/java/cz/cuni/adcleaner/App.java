@@ -46,11 +46,13 @@ public class App extends JPanel
         //I don't know how to get rid of this warning:
         //Leaking this in constructor
         pathText.addActionListener(this);
-        label = new JLabel("Open:");
+        label = new JLabel("File or stream URL:");
         
         //Create the open button. If image wanted use:
         //createImageIcon("path to image") in JButton
-        openButton = new JButton("Open a File...");
+        openButton = new JButton("Browse");
+        openButton.setToolTipText("Browse your PC for a video file.");
+
         //Too lazy to write another class:
         //I don't know how to get rid of this warning:
         //Leaking this in constructor
@@ -97,7 +99,8 @@ public class App extends JPanel
                 //Here you got file in variable file and you can do what you
                 //need with it
                 pathText.setText(file.getAbsolutePath());
-                text.append("Opening: " + file.getName() + "." + newline);
+                text.append("Opening file: " + file.getAbsolutePath() + "." + newline);
+                //text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
             }
             else
             {
@@ -107,10 +110,27 @@ public class App extends JPanel
         }
         else if (e.getSource() == pathText)
         {
-            String fileName = pathText.getText();
-            text.append("Opening: " + fileName + "." + newline);
-            file = new File(fileName);
-            text.append("File path for textField: " + file.getAbsolutePath() + "." + newline);
+            String source = pathText.getText();
+            text.append("Processing: " + source + "." + newline);
+
+            if (source.contains("http://"))
+            {
+                file = null;
+                text.append("Connecting to URL: " + source + "."+ newline);
+            }
+            else
+            {
+                file = new File(source);
+                if (file.exists())
+                {
+                    text.append("Opening file: " + file.getAbsolutePath() + "." + newline);
+                }
+                else
+                {
+                    file = null;
+                    text.append("File " + source + " doesn't exist."+ newline);
+                }
+            }
         }
     }
     
