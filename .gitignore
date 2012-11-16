@@ -4,6 +4,7 @@
 *.war
 *.ear
 
+# target is also for NetBeans
 # Eclipse
 .metadata
 .settings

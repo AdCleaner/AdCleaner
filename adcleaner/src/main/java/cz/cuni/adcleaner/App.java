@@ -15,14 +15,15 @@ public class App extends JPanel
                              implements ActionListener
 {
     static private final String newline = "\n";
+    private String URL = "";
+    private File file;
+    
     private JLabel label;
     private JTextField pathText;
     private JButton openButton;
     private JTextArea text;
-    
     private JFileChooser fc;
-    //Maybe public can be
-    private File file;
+   
 
     /**
      *
@@ -31,11 +32,26 @@ public class App extends JPanel
     public File getSelectedFile()
     {
         if (file.exists())
+        {
             return file;
+        }
 
         return null;
     }
     
+    /**
+     * User must check if URL exist and is valid
+     * 
+     * @return Returns string URL or "" if URL is empty
+     */
+    public String getURL()
+    {
+        return URL;
+    }
+    
+    /**
+     * Constructor - creates window and its layout
+     */
     public App()
     {
         super(new BorderLayout());
@@ -43,8 +59,6 @@ public class App extends JPanel
         //Create text area for writing path
         pathText = new JTextField(30);
         //Too lazy to write another class:
-        //I don't know how to get rid of this warning:
-        //Leaking this in constructor
         pathText.addActionListener(this);
         label = new JLabel("File or stream URL:");
         
@@ -54,8 +68,6 @@ public class App extends JPanel
         openButton.setToolTipText("Browse your PC for a video file.");
 
         //Too lazy to write another class:
-        //I don't know how to get rid of this warning:
-        //Leaking this in constructor
         openButton.addActionListener(this);
         
         //Create a file chooser
@@ -70,9 +82,6 @@ public class App extends JPanel
         text.setEditable(false);
         JScrollPane logScrollPane = new JScrollPane(text);
 
-        // :-D
-        pathText.setSize(pathText.getWidth(), pathText.getHeight() + 10);
-
         //For layout purposes, put the buttons in a separate panel
         JPanel buttonPanel = new JPanel(); //use FlowLayout
         buttonPanel.add(label);
@@ -84,68 +93,80 @@ public class App extends JPanel
         add(logScrollPane, BorderLayout.CENTER);
     }
     
-   
+    /**
+     * Process the action of choosing a file
+     * 
+     * @param e - action event like mouse click or enter
+     */
     @Override
     public void actionPerformed(ActionEvent e)
     {
+        //Cleaning variables for new input (URL or file)
+        URL = "";
+        file = null;
+        
         //Handle open button action
         if (e.getSource() == openButton)
         {
+            //show Dialog window
             int returnVal = fc.showOpenDialog(App.this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
+                //Get result of dialog window choosing
                 file = fc.getSelectedFile();
-                //Here you got file in variable file and you can do what you
-                //need with it
-                pathText.setText(file.getAbsolutePath());
-                text.append("Opening file: " + file.getAbsolutePath() + "." + newline);
-                //text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
-            }
-            else
-            {
-                text.append("Open command cancelled by user." + newline);
-            }
-            text.setCaretPosition(text.getDocument().getLength());
-        }
-        else if (e.getSource() == pathText)
-        {
-            String source = pathText.getText();
-            text.append("Processing: " + source + "." + newline);
-
-            if (source.contains("http://"))
-            {
-                file = null;
-                text.append("Connecting to URL: " + source + "."+ newline);
-            }
-            else
-            {
-                file = new File(source);
+                
                 if (file.exists())
                 {
-                    text.append("Opening file: " + file.getAbsolutePath() + "." + newline);
+                    text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
+                    //Put the path to file into text field
+                    pathText.setText(file.getAbsolutePath());
                 }
                 else
                 {
+                    text.append(String.format("File %s doesn't exist.%s", file.getAbsolutePath(), newline));
+                    //File doesn't exist so set file to null
                     file = null;
-                    text.append("File " + source + " doesn't exist."+ newline);
+                }
+            }
+            else
+            {
+                //File chooser was exited
+                text.append(String.format("Open command cancelled by user.%s", newline));
+            }
+        }
+        else if (e.getSource() == pathText)
+        {
+            //Processing string from text field
+            String source = pathText.getText();
+            text.append(String.format("Processing: %s.%s", source, newline));
+
+            if (source.contains("http://"))
+            {
+                //It's URL
+                URL = source;
+                text.append(String.format("Connecting to URL: %s.%s", URL, newline));
+            }
+            else
+            {
+                //It's file
+                file = new File(source);
+                if (file.exists())
+                {
+                    text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
+                }
+                else
+                {
+                    text.append(String.format("File %s doesn't exist.%s", source, newline));
+                    file = null;
                 }
             }
         }
-    }
-    
-    private static void createAndShowGUI()
-    {
-        //Create and set up the window
-        JFrame frame = new JFrame("AdCleaner");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //Add content to the window
-        frame.add(new App());
-
-        //Display the window
-        frame.pack();
-        frame.setVisible(true);
+        
+        //if file != null then file contains existing file
+        
+        //if URL != "" then URL contains http://
+        //validation of URL is needed (also if URL exists)
     }
     
     public static void main( String[] args )
@@ -157,7 +178,17 @@ public class App extends JPanel
             {
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE); 
-                createAndShowGUI();
+                //Create and set up the window
+                JFrame frame = new JFrame("AdCleaner");
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+                //Add content to the window
+                frame.add(new App());
+
+                //Size the frame
+                frame.pack();
+                //Display the window
+                frame.setVisible(true);
             }
         });
     }
