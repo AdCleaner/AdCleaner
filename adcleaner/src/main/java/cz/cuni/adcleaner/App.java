@@ -108,65 +108,90 @@ public class App extends JPanel
         //Handle open button action
         if (e.getSource() == openButton)
         {
-            //show Dialog window
-            int returnVal = fc.showOpenDialog(App.this);
-
-            if (returnVal == JFileChooser.APPROVE_OPTION)
-            {
-                //Get result of dialog window choosing
-                file = fc.getSelectedFile();
-                
-                if (file.exists())
-                {
-                    text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
-                    //Put the path to file into text field
-                    pathText.setText(file.getAbsolutePath());
-                }
-                else
-                {
-                    text.append(String.format("File %s doesn't exist.%s", file.getAbsolutePath(), newline));
-                    //File doesn't exist so set file to null
-                    file = null;
-                }
-            }
-            else
-            {
-                //File chooser was exited
-                text.append(String.format("Open command cancelled by user.%s", newline));
-            }
+            openButtonAction();
         }
         else if (e.getSource() == pathText)
         {
-            //Processing string from text field
-            String source = pathText.getText();
-            text.append(String.format("Processing: %s.%s", source, newline));
-
-            if (source.contains("http://"))
-            {
-                //It's URL
-                URL = source;
-                text.append(String.format("Connecting to URL: %s.%s", URL, newline));
-            }
-            else
-            {
-                //It's file
-                file = new File(source);
-                if (file.exists())
-                {
-                    text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
-                }
-                else
-                {
-                    text.append(String.format("File %s doesn't exist.%s", source, newline));
-                    file = null;
-                }
-            }
+            pathTextEnterPressed();
         }
         
         //if file != null then file contains existing file
         
         //if URL != "" then URL contains http://
         //validation of URL is needed (also if URL exists)
+    }
+    
+    private void openButtonAction()
+    {
+        //show Dialog window
+        int returnVal = fc.showOpenDialog(App.this);
+
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            //Get result of dialog window choosing
+            file = fc.getSelectedFile();
+
+            if (file.exists())
+            {
+                text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
+                //Put the path to file into text field
+                pathText.setText(file.getAbsolutePath());
+            }
+            else
+            {
+                text.append(String.format("File %s doesn't exist.%s", file.getAbsolutePath(), newline));
+                //File doesn't exist so set file to null
+                file = null;
+            }
+        }
+        else
+        {
+            //File chooser was exited
+            text.append(String.format("Open command cancelled by user.%s", newline));
+        }
+    }
+ 
+    private void pathTextEnterPressed()
+    {
+        //Processing string from text field
+        String source = pathText.getText();
+        text.append(String.format("Processing: %s.%s", source, newline));
+
+        if (source.contains("http://"))
+        {
+            //It's URL
+            URL = source;
+            text.append(String.format("Connecting to URL: %s.%s", URL, newline));
+        }
+        else
+        {
+            //It's file
+            file = new File(source);
+            if (file.exists())
+            {
+                text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
+            }
+            else
+            {
+                text.append(String.format("File %s doesn't exist.%s", source, newline));
+                file = null;
+            }
+        }
+    }
+    
+    private static void createAndShowGUI()
+    {
+        //Create and set up the window
+        JFrame frame = new JFrame("AdCleaner");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Add content to the window
+        frame.add(new App());
+
+        //Size the frame
+        frame.pack();
+        //Display the window
+        frame.setVisible(true);
     }
     
     public static void main( String[] args )
@@ -178,17 +203,7 @@ public class App extends JPanel
             {
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE); 
-                //Create and set up the window
-                JFrame frame = new JFrame("AdCleaner");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-                //Add content to the window
-                frame.add(new App());
-
-                //Size the frame
-                frame.pack();
-                //Display the window
-                frame.setVisible(true);
+                createAndShowGUI();
             }
         });
     }
