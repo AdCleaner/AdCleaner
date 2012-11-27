@@ -20,7 +20,7 @@ public class App extends JPanel
     
     private JLabel label;
     private JTextField pathText;
-    private JButton openButton;
+    private JButton openButton, startButton, stopButton;
     private JTextArea text;
     private JFileChooser fc;
    
@@ -75,6 +75,16 @@ public class App extends JPanel
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
         fc.setCurrentDirectory(new File("C:/"));
         
+        //Create the start button.
+        startButton = new JButton("Start");
+        startButton.setToolTipText("Starts search for advertisments in video file.");
+        startButton.addActionListener(this);
+        
+        //Create the stop button.
+        stopButton = new JButton("Stop");
+        stopButton.setToolTipText("Stops search for advertisments in video file.");
+        stopButton.addActionListener(this);
+        
         //Create the text area so action listeners can refer to it
         //15 lines, 50 chars:
         text = new JTextArea(15,50);
@@ -87,10 +97,12 @@ public class App extends JPanel
         buttonPanel.add(label);
         buttonPanel.add(pathText);
         buttonPanel.add(openButton);
+        buttonPanel.add(startButton);
+        buttonPanel.add(stopButton);
 
         //Add the buttons and the text to this panel
-        add(buttonPanel, BorderLayout.PAGE_START);
-        add(logScrollPane, BorderLayout.CENTER);
+        this.add(buttonPanel, BorderLayout.PAGE_START);
+        this.add(logScrollPane, BorderLayout.CENTER);
     }
     
     /**
@@ -101,24 +113,32 @@ public class App extends JPanel
     @Override
     public void actionPerformed(ActionEvent e)
     {
-        //Cleaning variables for new input (URL or file)
-        URL = "";
-        file = null;
-        
         //Handle open button action
         if (e.getSource() == openButton)
         {
+            clearOldData();
             openButtonAction();
         }
         else if (e.getSource() == pathText)
         {
+            clearOldData();
             pathTextEnterPressed();
         }
-        
-        //if file != null then file contains existing file
-        
-        //if URL != "" then URL contains http://
-        //validation of URL is needed (also if URL exists)
+        else if (e.getSource() == startButton)
+        {
+            startButtonAction();
+        }
+        else if (e.getSource() == stopButton)
+        {
+            stopButtonAction();
+        }
+    }
+    
+    private void clearOldData()
+    {
+        //Cleaning variables for new input (URL or file)
+        URL = "";
+        file = null;
     }
     
     private void openButtonAction()
@@ -150,7 +170,7 @@ public class App extends JPanel
             text.append(String.format("Open command cancelled by user.%s", newline));
         }
     }
- 
+    
     private void pathTextEnterPressed()
     {
         //Processing string from text field
@@ -177,6 +197,49 @@ public class App extends JPanel
                 file = null;
             }
         }
+    }
+    
+    private void startButtonAction()
+    {
+        if (file != null) //file contains existing file
+        {
+            //temporary behaviour
+            text.append(String.format("Scanning file: %s.%s", file.getName(), newline));
+            if (file.getName().contains(".txt"))
+            {
+                text.append(String.format("Adding buttons.%s", newline));
+                //add buttons
+                JPanel resultPanel = new JPanel();
+                PossibleAd a = new PossibleAd();
+                a.createLayout(resultPanel);
+                this.add(resultPanel, BorderLayout.SOUTH);
+                this.invalidate();
+            }
+            else
+            {
+                text.append(String.format("It's not a txt file.%s", newline));
+            }
+        }
+        
+        if (!URL.equals("")) //URL contains http://
+        {
+            //validation of URL is needed (also if URL exists)
+            text.append(String.format("Downloading stream: %s.%s", URL, newline));
+        }
+        
+        if((file == null) && URL.equals(""))
+        {
+            text.append(String.format("No file or URL selected.%s", newline));
+        }
+    }
+    
+    private void stopButtonAction()
+    {
+        //Kill procesing thread.
+        text.append(String.format("Stopping current action.%s", newline));
+        
+        //temporary behaviour
+        //remove buttons
     }
     
     private static void createAndShowGUI()
