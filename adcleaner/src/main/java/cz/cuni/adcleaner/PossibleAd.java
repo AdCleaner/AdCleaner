@@ -12,13 +12,8 @@ public class PossibleAd
     private int startingHour, startingMinute, startingSecond, startingFrame;
     private int endingHour, endingMinute, endingSecond, endingFrame;
     private boolean isAd, toCut;
-    private JLabel labelStart, labelEnd;
-    private JTextField textStart, textEnd;
-    private JButton play;
-    private JCheckBox advertisement, cutFromVideo;
 
-    //TODO!! get for isAd and toCut
-    //TODO!! get and set for start and end values
+
 
     /**
      * Default constructor - for testing purposes
@@ -54,6 +49,96 @@ public class PossibleAd
                            endHour, endMinute, endSecond, endFrame);
 
         this.isAd = isAd;
+        this.toCut = toCut;
+    }
+    
+    public String getStartingTime()
+    {
+        return timeToString(true);
+    }
+
+    public String getEndingTime()
+    {
+        return timeToString(false);
+    }
+
+    public int getStartingHour() {
+        return startingHour;
+    }
+
+    public int getStartingMinute() {
+        return startingMinute;
+    }
+
+    public int getStartingSecond() {
+        return startingSecond;
+    }
+
+    public int getStartingFrame() {
+        return startingFrame;
+    }
+
+    public int getEndingHour() {
+        return endingHour;
+    }
+
+    public int getEndingMinute() {
+        return endingMinute;
+    }
+
+    public int getEndingSecond() {
+        return endingSecond;
+    }
+
+    public int getEndingFrame() {
+        return endingFrame;
+    }
+
+    public boolean getIsAd() {
+        return isAd;
+    }
+
+    public boolean getToCut() {
+        return toCut;
+    }
+
+    public void setStartingHour(int startingHour) {
+        this.startingHour = startingHour;
+    }
+
+    public void setStartingMinute(int startingMinute) {
+        this.startingMinute = startingMinute;
+    }
+
+    public void setStartingSecond(int startingSecond) {
+        this.startingSecond = startingSecond;
+    }
+
+    public void setStartingFrame(int startingFrame) {
+        this.startingFrame = startingFrame;
+    }
+
+    public void setEndingHour(int endingHour) {
+        this.endingHour = endingHour;
+    }
+
+    public void setEndingMinute(int endingMinute) {
+        this.endingMinute = endingMinute;
+    }
+
+    public void setEndingSecond(int endingSecond) {
+        this.endingSecond = endingSecond;
+    }
+
+    public void setEndingFrame(int endingFrame) {
+        this.endingFrame = endingFrame;
+    }
+
+    public void setIsAd(boolean ad) {
+        isAd = ad;
+    }
+
+    public void setToCut(boolean toCut) {
         this.toCut = toCut;
     }
 
@@ -169,7 +254,7 @@ public class PossibleAd
      *              - if false then End Time will be returned
      * @return string time in hour:minute:second:frame form
      */
-    public String timeToString(boolean start)
+    private String timeToString(boolean start)
     {
         String result = "";
 
@@ -195,81 +280,5 @@ public class PossibleAd
         }
 
         return result;
-    }
-
-    /**
-     * Sets the time from textFields
-     * If not in right form the Program crashes!!!
-     */
-    public void setInfoFromGUI()
-    {
-        String t = textStart.getText();
-        String[] startTime = t.split(":");
-        startingHour = Integer.parseInt(startTime[0]);
-        startingMinute = Integer.parseInt(startTime[1]);
-        startingSecond = Integer.parseInt(startTime[2]);
-        startingFrame = Integer.parseInt(startTime[3]);
-
-        t = textEnd.getText();
-        String[] endTime = t.split(":");
-        endingHour = Integer.parseInt(endTime[0]);
-        endingMinute = Integer.parseInt(endTime[1]);
-        endingSecond = Integer.parseInt(endTime[2]);
-        endingFrame = Integer.parseInt(endTime[3]);
-
-        isAd = advertisement.isSelected();
-        toCut = cutFromVideo.isSelected();
-    }
-
-    /**
-     * Make a result info about advertisements
-     * 
-     * @param panel - panel into which components are putted
-     */
-    public void putIntoPanel(JPanel panel)
-    {
-        //Text label for starting item
-        labelStart = new JLabel("Start:");
-
-        //Field where you can change start of advertisement
-        textStart = new JTextField(11);
-        textStart.setText(timeToString(true));
-        textStart.setToolTipText("You can change time when ad begins.");
-
-        //Text label for ending tiem
-        labelEnd = new JLabel("End:");
-
-        //Field where you can change end of advertisement
-        textEnd = new JTextField(11);
-        textEnd.setText(timeToString(false));
-        textEnd.setToolTipText("You can change time when ad ends.");
-
-        //Button for playing video from start time
-        play = new JButton("Play");
-        play.setToolTipText("Play video from start time - NOT IMPLEMENTED");
-        //TODO implement Action Listener
-        //play.addActionListener(this);
-
-        //CheckBox for selecting if it is advertisement
-        advertisement = new JCheckBox("Is it an Ad?");
-        advertisement.setSelected(isAd);
-        advertisement.setToolTipText("If it is not an advertisement uncheck.");
-
-        //CheckBox for selecting if it will be cut from video
-        cutFromVideo = new JCheckBox("Crop");
-        cutFromVideo.setSelected(toCut);
-        cutFromVideo.setToolTipText("Cut this advertisement from video file.");
-
-        //put it all together
-        panel.add(labelStart);
-        panel.add(textStart);
-        panel.add(labelEnd);
-        panel.add(textEnd);
-        panel.add(play);
-        panel.add(advertisement);
-        panel.add(cutFromVideo);
-
-        //update panel
-        panel.invalidate();
     }
 }

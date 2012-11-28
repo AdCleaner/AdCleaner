@@ -2,9 +2,7 @@ package cz.cuni.adcleaner;
 
 import javax.swing.*;
 
-import cz.cuni.adcleaner.descriptors.CaptureScreenToFile;
-import cz.cuni.adcleaner.descriptors.DescriptorsTest;
-import cz.cuni.adcleaner.gui.App;
+import cz.cuni.adcleaner.gui.MainWindow;
 
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
@@ -21,7 +19,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add content to the window
-        frame.add(new App());
+        frame.add(new MainWindow());
 
         //Size the frame
         frame.pack();
@@ -47,8 +45,8 @@ public class Main {
             }
         });
 
-        CaptureScreenToFile.run(args);
+        //CaptureScreenToFile.run(args);
 
-        DescriptorsTest.run();
+        //DescriptorsTest.run();
     }
 }
