@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with Xuggle-Xuggler-Main.  If not, see <http://www.gnu.org/licenses/>.
  *******************************************************************************/
-package cz.cuni.adcleaner;
+package cz.cuni.adcleaner.descriptors;
 
 import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.ToolFactory;
@@ -45,7 +45,7 @@ public class CaptureScreenToFile
    * 
    * @param args
    */
-  public static void main(String[] args)
+  public static void run(String[] args)
   {
     try
     {
@@ -53,7 +53,7 @@ public class CaptureScreenToFile
       if (args.length > 0)
         outFile = args[0];
       else
-        outFile = "output.mp4";
+        outFile = "out/output.mp4";
       // This is the robot for taking a snapshot of the
       // screen.  It's part of Java AWT
       final Robot robot = new Robot();

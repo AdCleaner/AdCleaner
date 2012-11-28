@@ -1,4 +1,4 @@
-package cz.cuni.adcleaner;
+package cz.cuni.adcleaner.gui;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +7,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.*;
+
+import cz.cuni.adcleaner.PossibleAd;
 
 /**
  * Runs application where you can choose file
@@ -71,7 +73,6 @@ public class App extends JPanel
     {
         super(new BorderLayout());
 
-
         //Create text area for writing path
         pathText = new JTextField(30);
         //Too lazy to write another class:
@@ -122,7 +123,7 @@ public class App extends JPanel
         buttonPanel.add(stopButton);
         buttonPanel.add(processButton);
 
-        //For result layout purpos
+        //For result layout purpose
         resultBox = new JPanel();
         resultBox.setLayout(new BoxLayout(resultBox, BoxLayout.Y_AXIS));
 
@@ -324,28 +325,28 @@ public class App extends JPanel
     }
 
     /**
-     * Temporary function for filling arraylist with fake advertisements
+     * Temporary function for filling array list with fake advertisements
      */
     private void makeTestingTimes()
     {
         PossibleAd pointer;
 
         //00:01:20 - 00:01:50
-        pointer = new PossibleAd(0, 1, 20, 0, 0, 1, 50, 0);
+        pointer = new PossibleAd(0, 1, 20, 0, 0, 1, 50, 0, true, false);
         addAdvertisement(pointer);
 
         //00:13:02 - 00:14:14
-        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0);
+        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0, true, false);
         addAdvertisement(pointer);
 
         //00:20:20 - 00:22:22
-        pointer = new PossibleAd(0, 20, 20, 0, 0, 22, 22, 0);
+        pointer = new PossibleAd(0, 20, 20, 0, 0, 22, 22, 0, true, false);
         addAdvertisement(pointer);
     }
 
     /**
      * Function displays results in bottom of window.
-     * (Data is taken from arraylist result)
+     * (Data is taken from array list result)
      */
     private void showTimes()
     {
@@ -365,42 +366,5 @@ public class App extends JPanel
         //make them visible
         this.revalidate();
         this.repaint();
-    }
-
-    /**
-     * Create JFrame and sets it
-     */
-    private static void createAndShowGUI()
-    {
-        //Create and set up the window
-        JFrame frame = new JFrame("AdCleaner");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //Add content to the window
-        frame.add(new App());
-
-        //Size the frame
-        frame.pack();
-        //Display the window
-        frame.setVisible(true);
-    }
-
-    /**
-     * Main function for program
-     * 
-     * @param args program doesn't use them
-     */
-    public static void main( String[] args )
-    {
-        SwingUtilities.invokeLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                //Turn off metal's use of bold fonts
-                UIManager.put("swing.boldMetal", Boolean.FALSE); 
-                createAndShowGUI();
-            }
-        });
     }
 }

@@ -1,6 +1,4 @@
-package cz.cuni.adcleaner;
-
-import static cz.cuni.adcleaner.ImageProcessorFactory.newProcessor;
+package cz.cuni.adcleaner.descriptors;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +22,7 @@ import de.lmu.ifi.dbs.jfeaturelib.shapeFeatures.ExtremalPoints;
 import de.lmu.ifi.dbs.jfeaturelib.shapeFeatures.Profiles;
 
 public class DescriptorsTest {
-	public static void main(String[] args) {
+	public static void run() {
 		List<FeatureDescriptor> descriptors1 = getAllDescriptors();
 		List<FeatureDescriptor> descriptors2 = getAllDescriptors();
 		List<FeatureDescriptor> descriptors3 = getAllDescriptors();
@@ -42,7 +40,7 @@ public class DescriptorsTest {
 	}
 
 	private static List<double[]> runDescriptor(String path, FeatureDescriptor descriptor) {
-		descriptor.run(newProcessor(new File(path)));
+		descriptor.run(ImageProcessorFactory.newProcessor(new File(path)));
 		return descriptor.getFeatures();
 	}
 

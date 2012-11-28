@@ -1,4 +1,4 @@
-package cz.cuni.adcleaner;
+package cz.cuni.adcleaner.descriptors;
 
 import java.io.File;
 

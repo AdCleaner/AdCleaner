@@ -1,4 +1,4 @@
-package cz.cuni.adcleaner;
+package cz.cuni.adcleaner.descriptors;
 
 import de.lmu.ifi.dbs.jfeaturelib.Progress;
 import de.lmu.ifi.dbs.jfeaturelib.features.AbstractFeatureDescriptor;

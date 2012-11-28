@@ -25,10 +25,7 @@ public class PossibleAd
      */
     public PossibleAd()
     {
-        setStartAndEndTime(0, 0, 0, 0, 0, 0, 0, 0);
-
-        isAd = true;
-        toCut = false; //crop
+        this(0, 0, 0, 0, 0, 0, 0, 0, true, false);
     }
 
     /**
@@ -49,13 +46,15 @@ public class PossibleAd
                       int endHour,
                       int endMinute,
                       int endSecond,
-                      int endFrame)
+                      int endFrame,
+                      boolean isAd,
+                      boolean toCut)
     {
         setStartAndEndTime(startHour, startMinute, startSecond, startFrame,
                            endHour, endMinute, endSecond, endFrame);
 
-        isAd = true; //Default option
-        toCut = false; //Default option
+        this.isAd = isAd;
+        this.toCut = toCut;
     }
 
     /**
@@ -229,7 +228,7 @@ public class PossibleAd
      */
     public void putIntoPanel(JPanel panel)
     {
-        //Text label for starting tiem
+        //Text label for starting item
         labelStart = new JLabel("Start:");
 
         //Field where you can change start of advertisement
