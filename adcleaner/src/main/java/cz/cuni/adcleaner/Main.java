@@ -2,6 +2,7 @@ package cz.cuni.adcleaner;
 
 import javax.swing.*;
 
+import cz.cuni.adcleaner.descriptors.*;
 import cz.cuni.adcleaner.gui.MainWindow;
 
 /**
@@ -34,19 +35,21 @@ public class Main {
      */
     public static void main( String[] args )
     {
-        SwingUtilities.invokeLater(new Runnable()
-        {
+        //gui();
+
+        //CaptureScreenToFile.run(args);
+
+        DescriptorsTest.run();
+    }
+
+    private static void gui() {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 //Turn off metal's use of bold fonts
                 UIManager.put("swing.boldMetal", Boolean.FALSE);
                 createAndShowGUI();
             }
         });
-
-        //CaptureScreenToFile.run(args);
-
-        //DescriptorsTest.run();
     }
 }
