@@ -11,6 +11,31 @@ import cz.cuni.adcleaner.gui.MainWindow;
 public class Main {
 
     /**
+     * Main function for program
+     *
+     * @param args program doesn't use them
+     */
+    public static void main( String[] args )
+    {
+        gui();
+
+        //CaptureScreenToFile.run(args);
+
+        //DescriptorsTest.run();
+    }
+
+    private static void gui() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                //Turn off metal's use of bold fonts
+                UIManager.put("swing.boldMetal", Boolean.FALSE);
+                createAndShowGUI();
+            }
+        });
+    }
+
+    /**
      * Create JFrame and sets it
      */
     private static void createAndShowGUI()
@@ -26,30 +51,5 @@ public class Main {
         frame.pack();
         //Display the window
         frame.setVisible(true);
-    }
-
-    /**
-     * Main function for program
-     *
-     * @param args program doesn't use them
-     */
-    public static void main( String[] args )
-    {
-        //gui();
-
-        //CaptureScreenToFile.run(args);
-
-        DescriptorsTest.run();
-    }
-
-    private static void gui() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                //Turn off metal's use of bold fonts
-                UIManager.put("swing.boldMetal", Boolean.FALSE);
-                createAndShowGUI();
-            }
-        });
     }
 }

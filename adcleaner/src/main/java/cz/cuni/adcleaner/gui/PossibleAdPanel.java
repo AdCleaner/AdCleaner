@@ -77,6 +77,7 @@ public class PossibleAdPanel extends JPanel {
         //Button for playing video from start time
         play = new JButton("Play");
         play.setToolTipText("Play video from start time - NOT IMPLEMENTED");
+        play.setEnabled(false);
         //TODO implement Action Listener
         //play.addActionListener(this);
 

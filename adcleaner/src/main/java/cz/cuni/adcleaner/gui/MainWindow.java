@@ -131,6 +131,10 @@ public class MainWindow extends JPanel
         this.add(navigationBar, BorderLayout.PAGE_START);
         this.add(logScrollPane, BorderLayout.CENTER);
         this.add(resultBox, BorderLayout.PAGE_END);
+
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(false);
     }
 
     /**
@@ -207,6 +211,10 @@ public class MainWindow extends JPanel
             //File chooser was exited
             text.append(String.format("Open command cancelled by user.%s", newline));
         }
+
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(false);
     }
 
     /**
@@ -276,6 +284,10 @@ public class MainWindow extends JPanel
         {
             text.append(String.format("No file or URL selected.%s", newline));
         }
+
+        startButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        processButton.setEnabled(true);
     }
 
     /**
@@ -294,6 +306,10 @@ public class MainWindow extends JPanel
             results.clear();
             showTimes();
         }
+
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(false);
     }
 
     /**
@@ -319,6 +335,10 @@ public class MainWindow extends JPanel
         text.append(String.format("--------------------------%s", newline));
 
         showTimes();
+
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(false);
     }
 
     /**
