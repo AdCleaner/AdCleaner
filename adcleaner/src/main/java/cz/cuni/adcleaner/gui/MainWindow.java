@@ -21,14 +21,14 @@ public class MainWindow extends JPanel
      * Inner state of application
      */
     public enum State {
-        SELECT_SOURCE, SOURCE_SELECTED, PROCESSING, FINISH
+        INITIAL, PREPARED, PROCESSING, FINISH
         /***********************************************************
          If Processing of file cut takes too long (more then second)
          then a new state is needed (also Stop button will do more).
          ***********************************************************/
     }
 
-    private State ActiveState = State.SELECT_SOURCE;
+    private State ActiveState = State.INITIAL;
 
     static private final String newline = "\n";
     private String URL = "";
@@ -83,18 +83,18 @@ public class MainWindow extends JPanel
      * 4 methods for setting up the state of application (also enables/disables
      * buttons)
      */
-    private void setStateSelect()
+    private void setStateInitial()
     {
-        this.ActiveState = State.SELECT_SOURCE;
+        this.ActiveState = State.INITIAL;
         openButton.setEnabled(true);
         startButton.setEnabled(false);
         stopButton.setEnabled(false);
         processButton.setEnabled(false);
     }
 
-    private void setStateReadyToRun()
+    private void setStatePrepared()
     {
-        this.ActiveState = State.SOURCE_SELECTED;
+        this.ActiveState = State.PREPARED;
         openButton.setEnabled(true); //you can still choose another file
         startButton.setEnabled(true);
         stopButton.setEnabled(false);
@@ -140,7 +140,7 @@ public class MainWindow extends JPanel
         this.add(mainWindowContent);
 
         //sets starting state of application
-        this.setStateSelect();
+        this.setStateInitial();
     }
     
     /**
@@ -270,21 +270,21 @@ public class MainWindow extends JPanel
                 text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
                 //Put the path to file into text field
                 pathText.setText(file.getAbsolutePath());
-                this.setStateReadyToRun();
+                this.setStatePrepared();
             }
             else
             {
                 text.append(String.format("File %s doesn't exist.%s", file.getAbsolutePath(), newline));
                 //File doesn't exist so set file to null
                 file = null;
-                this.setStateSelect();
+                this.setStateInitial();
             }
         }
         else
         {
             //File chooser was exited
             text.append(String.format("Open command cancelled by user.%s", newline));
-            this.setStateSelect();
+            this.setStateInitial();
         }
     }
 
@@ -303,7 +303,7 @@ public class MainWindow extends JPanel
             URL = source;
             text.append(String.format("URL: %s selected.%s", URL, newline));
             //verification of URL during PROCESSING state
-            this.setStateReadyToRun();
+            this.setStatePrepared();
         }
         else
         {
@@ -312,13 +312,13 @@ public class MainWindow extends JPanel
             if (file.exists())
             {
                 text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
-                this.setStateReadyToRun();
+                this.setStatePrepared();
             }
             else
             {
                 text.append(String.format("File %s doesn't exist.%s", source, newline));
                 file = null;
-                this.setStateSelect();
+                this.setStateInitial();
             }
         }
     }
@@ -368,7 +368,7 @@ public class MainWindow extends JPanel
 
         text.append(String.format("Stopping current action.%s", newline));
 
-        this.setStateReadyToRun();
+        this.setStatePrepared();
 
         //remove buttons
         if (!results.isEmpty())
@@ -384,7 +384,7 @@ public class MainWindow extends JPanel
      */
     private void processButtonAction()
     {
-        this.setStateReadyToRun();
+        this.setStatePrepared();
         //TODO maybe enabled Stop button if processing takes too long
 
         if (results.isEmpty())
@@ -419,11 +419,15 @@ public class MainWindow extends JPanel
         addAdvertisement(new PossibleAdPanel(pointer));
 
         //00:13:02 - 00:14:14
-        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0, false, true);
+        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0, false, false);
         addAdvertisement(new PossibleAdPanel(pointer));
 
-        //00:20:20 - 00:22:22
-        pointer = new PossibleAd(0, 20, 20, 0, 0, 22, 22, 0, true, false);
+        //00:20:20 - 00:21:22
+        pointer = new PossibleAd(0, 20, 20, 0, 0, 21, 22, 0, true, true);
+        addAdvertisement(new PossibleAdPanel(pointer));
+
+        //00:22:01 - 00:22:31
+        pointer = new PossibleAd(0, 22, 1, 0, 0, 22, 31, 0, false, true);
         addAdvertisement(new PossibleAdPanel(pointer));
     }
 
