@@ -33,10 +33,19 @@ public final class VideoSection implements Comparable<VideoSection> {
 	public TimeUnit getTimeuUnit() {
 		return timeuUnit;
 	}
+	
+	public boolean isInSection(long time) {
+		return start <= time && time <= end;
+	}
 
 	@Override
 	public int compareTo(VideoSection o) {
 		int startCompare = this.start.compareTo(o.start);
 		return startCompare != 0 ? startCompare : this.end.compareTo(o.end);
+	}
+
+	@Override
+	public String toString() {
+		return "VideoSection [start=" + start + ", end=" + end + ", timeuUnit=" + timeuUnit + "]";
 	}
 }
