@@ -15,7 +15,7 @@ import com.xuggle.xuggler.IAudioSamples.Format;
 
 import cz.cuni.adcleaner.VideoSection;
 
-public class VolumeChangeDetector extends MediaToolAdapter {
+public class VolumeElevationDetectorAdapter extends MediaToolAdapter {
 
 	private VideoSection calibrationSection;
 	private int[] calibrationSections;
@@ -23,7 +23,7 @@ public class VolumeChangeDetector extends MediaToolAdapter {
 	private final int granularity;
 	private List<VideoSection> louderSections;
 
-	public VolumeChangeDetector(int numberOfContinousSections, double maxElevation, int granularity, long calibrationIntervalLength) {
+	public VolumeElevationDetectorAdapter(int numberOfContinousSections, double maxElevation, int granularity, long calibrationIntervalLength) {
 		this.maxElevation = maxElevation;
 		this.granularity = granularity;
 		calibrationSection = new VideoSection(0L, calibrationIntervalLength, TimeUnit.SECONDS);
