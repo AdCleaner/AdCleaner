@@ -13,6 +13,10 @@ public class PossibleAd
     private int endingHour, endingMinute, endingSecond, endingFrame;
     private boolean isAd, toCut;
 
+    /**
+     * number of frames in 1 second (must be bigger then 1)
+     */
+    private static int NUMBER_OF_FRAMES = 32;
 
 
     /**
@@ -143,6 +147,22 @@ public class PossibleAd
     }
 
     /**
+     * Public setter for most of private variables
+     */
+    public void setStartAndEndTimeProperly(int startHour,
+                                           int startMinute,
+                                           int startSecond,
+                                           int startFrame,
+                                           int endHour,
+                                           int endMinute,
+                                           int endSecond,
+                                           int endFrame)
+    {
+        setStartAndEndTime(startHour, startMinute, startSecond, startFrame,
+                           endHour, endMinute, endSecond, endFrame);
+    }
+
+    /**
      * Private setter for most of private variables
      */
     private void setStartAndEndTime(int startHour,
@@ -156,10 +176,10 @@ public class PossibleAd
     {
         //set start Frame
         if (startFrame < 0) { startFrame = 0; }
-        if (startFrame > 31)
+        if (startFrame > (NUMBER_OF_FRAMES - 1))
         {
-            startSecond += startFrame / 32;
-            startFrame = startFrame % 32;
+            startSecond += startFrame / NUMBER_OF_FRAMES;
+            startFrame = startFrame % NUMBER_OF_FRAMES;
         }
         startingFrame = startFrame;
 
@@ -189,10 +209,10 @@ public class PossibleAd
 
         //set end Frame
         if (endFrame < 0) { endFrame = 0; }
-        if (endFrame > 31)
+        if (endFrame > (NUMBER_OF_FRAMES - 1))
         {
-            endSecond += endFrame / 32;
-            endFrame = endFrame % 32;
+            endSecond += endFrame / NUMBER_OF_FRAMES;
+            endFrame = endFrame % NUMBER_OF_FRAMES;
         }
         endingFrame = endFrame;
 

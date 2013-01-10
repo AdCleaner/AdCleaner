@@ -35,17 +35,18 @@ public class PossibleAdPanel extends JPanel {
     {
         String t = textStart.getText();
         String[] startTime = t.split(":");
-        possibleAd.setStartingHour(Integer.parseInt(startTime[0]));
-        possibleAd.setStartingMinute(Integer.parseInt(startTime[1]));
-        possibleAd.setStartingSecond(Integer.parseInt(startTime[2]));
-        possibleAd.setStartingFrame(Integer.parseInt(startTime[3]));
 
         t = textEnd.getText();
         String[] endTime = t.split(":");
-        possibleAd.setEndingHour(Integer.parseInt(endTime[0]));
-        possibleAd.setEndingMinute(Integer.parseInt(endTime[1]));
-        possibleAd.setEndingSecond(Integer.parseInt(endTime[2]));
-        possibleAd.setEndingFrame(Integer.parseInt(endTime[3]));
+
+        possibleAd.setStartAndEndTimeProperly(Integer.parseInt(startTime[0]),
+                                              Integer.parseInt(startTime[1]),
+                                              Integer.parseInt(startTime[2]),
+                                              Integer.parseInt(startTime[3]),
+                                              Integer.parseInt(endTime[0]),
+                                              Integer.parseInt(endTime[1]),
+                                              Integer.parseInt(endTime[2]),
+                                              Integer.parseInt(endTime[3]));
 
         possibleAd.setIsAd(advertisement.isSelected());
         possibleAd.setToCut(cutFromVideo.isSelected());

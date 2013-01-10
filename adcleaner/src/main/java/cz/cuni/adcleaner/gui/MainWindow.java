@@ -17,6 +17,19 @@ import cz.cuni.adcleaner.PossibleAd;
 public class MainWindow extends JPanel
                              implements ActionListener
 {
+    /**
+     * Inner state of application
+     */
+    public enum State {
+        INITIAL, PREPARED, PROCESSING, FINISH
+        /***********************************************************
+         If Processing of file cut takes too long (more then second)
+         then a new state is needed (also Stop button will do more).
+         ***********************************************************/
+    }
+
+    private State ActiveState = State.INITIAL;
+
     static private final String newline = "\n";
     private String URL = "";
     private File file;
@@ -28,7 +41,7 @@ public class MainWindow extends JPanel
     private JFileChooser fc;
     private JPanel resultBox;
 
-    private ArrayList<PossibleAdPanel> results = new ArrayList<PossibleAdPanel>();
+    private ArrayList<PossibleAdPanel> results = new ArrayList<>();
 
 
     /**
@@ -67,12 +80,74 @@ public class MainWindow extends JPanel
     }
 
     /**
+     * 4 methods for setting up the state of application (also enables/disables
+     * buttons)
+     */
+    private void setStateInitial()
+    {
+        this.ActiveState = State.INITIAL;
+        openButton.setEnabled(true);
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(false);
+    }
+
+    private void setStatePrepared()
+    {
+        this.ActiveState = State.PREPARED;
+        openButton.setEnabled(true); //you can still choose another file
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(false);
+    }
+
+    private void setStateProcessing()
+    {
+        this.ActiveState = State.PROCESSING;
+        openButton.setEnabled(false);
+        startButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        processButton.setEnabled(false);
+        //Path is disabled in method: actionPerformed(ActionEvent e)
+    }
+
+    private void setStateFinish()
+    {
+        this.ActiveState = State.FINISH;
+        openButton.setEnabled(true);
+        openButton.setEnabled(false);
+        startButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        processButton.setEnabled(true);
+    }
+
+    /**
      * Constructor - creates window and its layout
      */
     public MainWindow()
     {
         super(new BorderLayout());
 
+        //Creates and fills the with content
+        JPanel window = new JPanel();
+        window.setLayout(new BorderLayout());
+        this.MainWindowContent(window);
+
+        //makes it scrollable
+        JScrollPane mainWindowContent = new JScrollPane(window);
+
+        //put it into window
+        this.add(mainWindowContent);
+
+        //sets starting state of application
+        this.setStateInitial();
+    }
+    
+    /**
+     * Creates contents of window
+     */
+    private void MainWindowContent(JPanel window)
+    {
         //Create text area for writing path
         pathText = new JTextField(30);
         //Too lazy to write another class:
@@ -128,13 +203,9 @@ public class MainWindow extends JPanel
         resultBox.setLayout(new BoxLayout(resultBox, BoxLayout.Y_AXIS));
 
         //Add the buttons and the text to this panel
-        this.add(navigationBar, BorderLayout.PAGE_START);
-        this.add(logScrollPane, BorderLayout.CENTER);
-        this.add(resultBox, BorderLayout.PAGE_END);
-
-        startButton.setEnabled(false);
-        stopButton.setEnabled(false);
-        processButton.setEnabled(false);
+        window.add(navigationBar, BorderLayout.PAGE_START);
+        window.add(logScrollPane, BorderLayout.CENTER);
+        window.add(resultBox, BorderLayout.PAGE_END);
     }
 
     /**
@@ -151,7 +222,8 @@ public class MainWindow extends JPanel
             clearOldData();
             openButtonAction();
         }
-        else if (e.getSource() == pathText)
+        else if ((e.getSource() == pathText) &&
+                 (ActiveState != State.PROCESSING))
         {
             clearOldData();
             pathTextEnterPressed();
@@ -198,23 +270,22 @@ public class MainWindow extends JPanel
                 text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
                 //Put the path to file into text field
                 pathText.setText(file.getAbsolutePath());
+                this.setStatePrepared();
             }
             else
             {
                 text.append(String.format("File %s doesn't exist.%s", file.getAbsolutePath(), newline));
                 //File doesn't exist so set file to null
                 file = null;
+                this.setStateInitial();
             }
         }
         else
         {
             //File chooser was exited
             text.append(String.format("Open command cancelled by user.%s", newline));
+            this.setStateInitial();
         }
-
-        startButton.setEnabled(true);
-        stopButton.setEnabled(false);
-        processButton.setEnabled(false);
     }
 
     /**
@@ -230,7 +301,9 @@ public class MainWindow extends JPanel
         {
             //It's URL
             URL = source;
-            text.append(String.format("Connecting to URL: %s.%s", URL, newline));
+            text.append(String.format("URL: %s selected.%s", URL, newline));
+            //verification of URL during PROCESSING state
+            this.setStatePrepared();
         }
         else
         {
@@ -239,11 +312,13 @@ public class MainWindow extends JPanel
             if (file.exists())
             {
                 text.append(String.format("Opening file: %s.%s", file.getAbsolutePath(), newline));
+                this.setStatePrepared();
             }
             else
             {
                 text.append(String.format("File %s doesn't exist.%s", source, newline));
                 file = null;
+                this.setStateInitial();
             }
         }
     }
@@ -253,6 +328,7 @@ public class MainWindow extends JPanel
      */
     private void startButtonAction()
     {
+        this.setStateProcessing();
         if (file != null) //file contains existing file
         {
             //temporary behaviour
@@ -277,17 +353,10 @@ public class MainWindow extends JPanel
         if (!URL.equals("")) //URL contains http://
         {
             //validation of URL is needed (also if URL exists)
-            text.append(String.format("Downloading stream: %s.%s", URL, newline));
+            text.append(String.format("Connecting to URL: %s.%s", URL, newline));
+            //TODO ADD HERE method for Stream detection
         }
-
-        if((file == null) && URL.equals(""))
-        {
-            text.append(String.format("No file or URL selected.%s", newline));
-        }
-
-        startButton.setEnabled(false);
-        stopButton.setEnabled(true);
-        processButton.setEnabled(true);
+        this.setStateFinish();
     }
 
     /**
@@ -295,9 +364,11 @@ public class MainWindow extends JPanel
      */
     private void stopButtonAction()
     {
-        //Kill procesing thread.
+        //Kill procesing thread - Stream processing/File Processing
 
         text.append(String.format("Stopping current action.%s", newline));
+
+        this.setStatePrepared();
 
         //remove buttons
         if (!results.isEmpty())
@@ -306,10 +377,6 @@ public class MainWindow extends JPanel
             results.clear();
             showTimes();
         }
-
-        startButton.setEnabled(true);
-        stopButton.setEnabled(false);
-        processButton.setEnabled(false);
     }
 
     /**
@@ -317,6 +384,9 @@ public class MainWindow extends JPanel
      */
     private void processButtonAction()
     {
+        this.setStatePrepared();
+        //TODO maybe enabled Stop button if processing takes too long
+
         if (results.isEmpty())
         {
             text.append(String.format("Nothing to process.%s", newline));
@@ -335,10 +405,6 @@ public class MainWindow extends JPanel
         text.append(String.format("--------------------------%s", newline));
 
         showTimes();
-
-        startButton.setEnabled(true);
-        stopButton.setEnabled(false);
-        processButton.setEnabled(false);
     }
 
     /**
@@ -353,11 +419,15 @@ public class MainWindow extends JPanel
         addAdvertisement(new PossibleAdPanel(pointer));
 
         //00:13:02 - 00:14:14
-        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0, false, true);
+        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0, false, false);
         addAdvertisement(new PossibleAdPanel(pointer));
 
-        //00:20:20 - 00:22:22
-        pointer = new PossibleAd(0, 20, 20, 0, 0, 22, 22, 0, true, false);
+        //00:20:20 - 00:21:22
+        pointer = new PossibleAd(0, 20, 20, 0, 0, 21, 22, 0, true, true);
+        addAdvertisement(new PossibleAdPanel(pointer));
+
+        //00:22:01 - 00:22:31
+        pointer = new PossibleAd(0, 22, 1, 0, 0, 22, 31, 0, false, true);
         addAdvertisement(new PossibleAdPanel(pointer));
     }
 
