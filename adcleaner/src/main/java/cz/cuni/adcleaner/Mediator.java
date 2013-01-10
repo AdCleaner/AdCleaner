@@ -8,10 +8,10 @@ import cz.cuni.adcleaner.gui.MainWindow;
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
-public class Main {
+public class Mediator {
 
     /**
-     * Main function for program
+     * Mediator function for program
      *
      * @param args program doesn't use them
      */

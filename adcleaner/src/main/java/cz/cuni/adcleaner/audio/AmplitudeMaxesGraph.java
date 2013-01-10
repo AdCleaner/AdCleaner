@@ -45,7 +45,7 @@ public class AmplitudeMaxesGraph {
 			maxes.add(Integer.MIN_VALUE);
 		}
 
-		new MediaToolApplyer(video).apply(new MediaToolAdapter() {
+		new MediaToolApplier(video).apply(new MediaToolAdapter() {
 
 			@Override
 			public void onAudioSamples(IAudioSamplesEvent event) {

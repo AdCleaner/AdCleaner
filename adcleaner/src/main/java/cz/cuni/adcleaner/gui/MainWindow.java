@@ -8,7 +8,9 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
+import cz.cuni.adcleaner.IAdFinder;
 import cz.cuni.adcleaner.PossibleAd;
+import cz.cuni.adcleaner.VideoSection;
 
 /**
  * Runs application where you can choose file
@@ -17,6 +19,7 @@ import cz.cuni.adcleaner.PossibleAd;
 public class MainWindow extends JPanel
                              implements ActionListener
 {
+
     /**
      * Inner state of application
      */
@@ -49,7 +52,7 @@ public class MainWindow extends JPanel
      * 
      * @return Returns selected file or null if file doesn't exist
      */
-    public File getSelectedFile()
+    private File getSelectedFile()
     {
         if (file.exists())
         {
@@ -329,19 +332,22 @@ public class MainWindow extends JPanel
     private void startButtonAction()
     {
         this.setStateProcessing();
-        if (file != null) //file contains existing file
+        File selectedFile = getSelectedFile();
+
+        if (selectedFile != null) //file contains existing file
         {
+
             //temporary behaviour
             //---------------START--------------------------
-            text.append(String.format("Scanning file: %s.%s", file.getName(), newline));
+            text.append(String.format("Scanning file: %s.%s", selectedFile.getName(), newline));
             if (file.getName().contains(".txt"))
             {
                 text.append(String.format("Adding buttons.%s", newline));
 
-                makeTestingTimes();
-
-                //add buttons
-                showTimes();
+                // TODO: threading
+                // TODO: show them
+                // TODO: call this via main
+                //java.util.List<VideoSection> possibleAds = finder.ProcessVideo(selectedFile.getAbsolutePath());
             }
             else
             {
@@ -364,7 +370,7 @@ public class MainWindow extends JPanel
      */
     private void stopButtonAction()
     {
-        //Kill procesing thread - Stream processing/File Processing
+        //TODO: Kill processing thread - Stream processing/File Processing
 
         text.append(String.format("Stopping current action.%s", newline));
 

@@ -30,7 +30,9 @@ public class VolumeRandomizer {
 	}
 
 	public void randomize(File inputVideo, File outputVideo) {
-		new MediaToolApplyer(inputVideo).apply(outputVideo, new VolumeAdjustTool(louderSections, volumeScale));
+		MediaToolApplier applier = new MediaToolApplier(inputVideo);
+                applier.apply(outputVideo, new VolumeAdjustTool(louderSections, volumeScale));
+                applier.run();
 	}
 
 	private static class VolumeAdjustTool extends MediaToolAdapter {

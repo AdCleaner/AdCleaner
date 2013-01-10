@@ -8,12 +8,12 @@ import com.xuggle.mediatool.IMediaWriter;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.ToolFactory;
 
-public class MediaToolApplyer {
+public class MediaToolApplier {
+        private final IMediaReader reader;
 
-	private final File inputVideo;
-
-	public MediaToolApplyer(File inputVideo) {
-		this.inputVideo = inputVideo;
+	public MediaToolApplier(File inputVideo) {
+                this.reader = ToolFactory.makeReader(inputVideo.toString());
+                reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 	}
 
 	public void apply(MediaToolAdapter mediaTool) {
@@ -21,14 +21,18 @@ public class MediaToolApplyer {
 	}
 
 	public void apply(File outputVideo, MediaToolAdapter mediaTool) {
-		IMediaReader reader = ToolFactory.makeReader(inputVideo.toString());
-		reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		reader.addListener(mediaTool);
+
+                // Leave
 		if (outputVideo != null) {
 			IMediaWriter writer = ToolFactory.makeWriter(outputVideo.toString(), reader);
 			mediaTool.addListener(writer);
 		}
-		while (reader.readPacket() == null)
-			;
 	}
+
+        public  void run()
+        {
+            while (reader.readPacket() == null)
+          			;
+        }
 }

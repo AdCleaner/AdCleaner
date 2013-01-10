@@ -74,7 +74,7 @@ public class VolumeAdDetector {
 
 	public List<VideoSection> run() {
 		VolumeElevationDetectorAdapter mediaTool = new VolumeElevationDetectorAdapter(numberOfContinousSections, maxElevation, granularity, callibrationIntervalLength);
-		new MediaToolApplyer(video).apply(mediaTool);
+		new MediaToolApplier(video).apply(mediaTool);
 		return mediaTool.getLouderSections();
 	}
 }

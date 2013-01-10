@@ -25,7 +25,7 @@ public class AmplitudeGraph {
 
 	public void show() {
 
-		new MediaToolApplyer(video).apply(new MediaToolAdapter() {
+		new MediaToolApplier(video).apply(new MediaToolAdapter() {
 			@Override
 			public void onAudioSamples(IAudioSamplesEvent event) {
 				IAudioSamples samples = event.getAudioSamples();
