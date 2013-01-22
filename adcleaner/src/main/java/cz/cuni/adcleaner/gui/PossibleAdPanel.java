@@ -2,29 +2,31 @@ package cz.cuni.adcleaner.gui;
 
 import javax.swing.*;
 
-import cz.cuni.adcleaner.PossibleAd;
+import cz.cuni.adcleaner.VideoSection;
 
 /**
  * GUI wrapper for PossibleAd class
- *
- * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public class PossibleAdPanel extends JPanel {
-    private PossibleAd possibleAd;
+    private VideoSection videoSection;
     private JLabel labelStart, labelEnd;
     private JTextField textStart, textEnd;
-    private JButton play;
     private JCheckBox advertisement, cutFromVideo;
 
-    public PossibleAdPanel(PossibleAd possibleAd)
+    private boolean toCut = true;
+    private boolean isAd = true;
+
+    //Constructor
+    public PossibleAdPanel(VideoSection videosection)
     {
-        this.possibleAd = possibleAd;
+        this.videoSection = videosection;
     }
 
-    public PossibleAd getAd()
+    //getter of VideoSection
+    public VideoSection getVideoSection()
     {
         setInfoFromGUI();
-        return possibleAd;
+        return this.videoSection;
     }
 
     /**
@@ -39,17 +41,82 @@ public class PossibleAdPanel extends JPanel {
         t = textEnd.getText();
         String[] endTime = t.split(":");
 
-        possibleAd.setStartAndEndTimeProperly(Integer.parseInt(startTime[0]),
-                                              Integer.parseInt(startTime[1]),
-                                              Integer.parseInt(startTime[2]),
-                                              Integer.parseInt(startTime[3]),
-                                              Integer.parseInt(endTime[0]),
-                                              Integer.parseInt(endTime[1]),
-                                              Integer.parseInt(endTime[2]),
-                                              Integer.parseInt(endTime[3]));
+        //in miliseconds
+        //HOUR, MINUTE, SECOND, MILISECOND
+        long start = Integer.parseInt(startTime[0]);
+        start *= 60; //now in minutes
+        start += Integer.parseInt(startTime[1]);
+        start *= 60; // now in seconds
+        start += Integer.parseInt(startTime[2]);
+        start *= 1000; // now in miliseconds
+        start += Integer.parseInt(startTime[3]);
 
-        possibleAd.setIsAd(advertisement.isSelected());
-        possibleAd.setToCut(cutFromVideo.isSelected());
+        long end = Integer.parseInt(endTime[0]);
+        end *= 60; //now in minutes
+        end += Integer.parseInt(endTime[1]);
+        end *= 60; // now in seconds
+        end += Integer.parseInt(endTime[2]);
+        end *= 1000; // now in miliseconds
+        end += Integer.parseInt(endTime[3]);
+
+        isAd = advertisement.isSelected();
+        toCut = cutFromVideo.isSelected();
+    }
+
+    /**
+     * Get starting time of video section from VideoSection
+     * 
+     * @return time is in string format hour:minute:second:milisecond
+     */
+    private String startTimeToString()
+    {
+        String result = "";
+        long start = this.videoSection.getStart();
+        int milisecond = (int) (start % 1000);
+        start /= 1000;
+        int second = (int) (start % 60);
+        start /= 60;
+        int minute = (int) (start % 60);
+        start /= 60;
+        int hour = (int) start;
+
+        result += Integer.toString(hour);
+        result += ":";
+        result += Integer.toString(minute);
+        result += ":";
+        result += Integer.toString(second);
+        result += ":";
+        result += Integer.toString(milisecond);
+        
+        return result;
+    }
+
+    /**
+     * Get ending time of video section from VideoSection
+     * 
+     * @return time is in string format hour:minute:second:milisecond
+     */
+    private String endTimeToString()
+    {
+        String result = "";
+        long end = this.videoSection.getEnd();
+        int milisecond = (int) (end % 1000);
+        end /= 1000;
+        int second = (int) (end % 60);
+        end /= 60;
+        int minute = (int) (end % 60);
+        end /= 60;
+        int hour = (int) end;
+
+        result += Integer.toString(hour);
+        result += ":";
+        result += Integer.toString(minute);
+        result += ":";
+        result += Integer.toString(second);
+        result += ":";
+        result += Integer.toString(milisecond);
+        
+        return result;
     }
 
     /**
@@ -64,7 +131,7 @@ public class PossibleAdPanel extends JPanel {
 
         //Field where you can change start of advertisement
         textStart = new JTextField(11);
-        textStart.setText(possibleAd.getStartingTime());
+        textStart.setText(startTimeToString());
         textStart.setToolTipText("You can change time when ad begins.");
 
         //Text label for ending item
@@ -72,24 +139,17 @@ public class PossibleAdPanel extends JPanel {
 
         //Field where you can change end of advertisement
         textEnd = new JTextField(11);
-        textEnd.setText(possibleAd.getEndingTime());
+        textEnd.setText(endTimeToString());
         textEnd.setToolTipText("You can change time when ad ends.");
-
-        //Button for playing video from start time
-        play = new JButton("Play");
-        play.setToolTipText("Play video from start time - NOT IMPLEMENTED");
-        play.setEnabled(false);
-        //TODO implement Action Listener
-        //play.addActionListener(this);
 
         //CheckBox for selecting if it is advertisement
         advertisement = new JCheckBox("Is it an Ad?");
-        advertisement.setSelected(possibleAd.getIsAd());
+        advertisement.setSelected(isAd);
         advertisement.setToolTipText("If it is not an advertisement uncheck.");
 
         //CheckBox for selecting if it will be cut from video
         cutFromVideo = new JCheckBox("Crop");
-        cutFromVideo.setSelected(possibleAd.getToCut());
+        cutFromVideo.setSelected(toCut);
         cutFromVideo.setToolTipText("Cut this advertisement from video file.");
 
         //put it all together
@@ -97,11 +157,38 @@ public class PossibleAdPanel extends JPanel {
         panel.add(textStart);
         panel.add(labelEnd);
         panel.add(textEnd);
-        panel.add(play);
         panel.add(advertisement);
         panel.add(cutFromVideo);
 
         //update panel
         panel.invalidate();
+    }
+
+    /**
+     * Make different log messages, depending on some settings
+     * 
+     * @return string message about proccessing video section
+     */
+    public String message()
+    {
+        String result = "";
+
+        if (isAd)
+        {
+            result += videoSection.toString();
+            result += " is an Advertisement";
+            if (toCut)
+            {
+                result += " and it will be cut";
+            }
+            result += ".";
+        }
+        else
+        {
+            result += videoSection.toString();
+            result += " is not an Advertisement.";
+        }
+
+        return result;
     }
 }

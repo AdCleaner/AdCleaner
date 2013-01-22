@@ -9,17 +9,16 @@ import java.util.ArrayList;
 import javax.swing.*;
 
 import cz.cuni.adcleaner.IAdFinder;
-import cz.cuni.adcleaner.PossibleAd;
+import cz.cuni.adcleaner.Mediator;
 import cz.cuni.adcleaner.VideoSection;
+
 
 /**
  * Runs application where you can choose file
  *
  */
-public class MainWindow extends JPanel
-                             implements ActionListener
+public class MainWindow implements ActionListener
 {
-
     /**
      * Inner state of application
      */
@@ -31,11 +30,13 @@ public class MainWindow extends JPanel
          ***********************************************************/
     }
 
+    private Mediator pointer;
     private State ActiveState = State.INITIAL;
-
     static private final String newline = "\n";
     private String URL = "";
     private File file;
+    java.util.List<VideoSection> possibleAds;
+    private ArrayList<PossibleAdPanel> results = new ArrayList<>();
 
     private JLabel label;
     private JTextField pathText;
@@ -43,9 +44,7 @@ public class MainWindow extends JPanel
     private JTextArea text;
     private JFileChooser fc;
     private JPanel resultBox;
-
-    private ArrayList<PossibleAdPanel> results = new ArrayList<>();
-
+    private static JPanel mainWindow;
 
     /**
      * The selected file is return, but user must check if it's a video file
@@ -129,7 +128,9 @@ public class MainWindow extends JPanel
      */
     public MainWindow()
     {
-        super(new BorderLayout());
+        //create main Window
+        mainWindow = new JPanel();
+        mainWindow.setLayout(new BorderLayout());
 
         //Creates and fills the with content
         JPanel window = new JPanel();
@@ -140,10 +141,11 @@ public class MainWindow extends JPanel
         JScrollPane mainWindowContent = new JScrollPane(window);
 
         //put it into window
-        this.add(mainWindowContent);
+        mainWindow.add(mainWindowContent);
 
         //sets starting state of application
         this.setStateInitial();
+
     }
     
     /**
@@ -205,30 +207,23 @@ public class MainWindow extends JPanel
         resultBox = new JPanel();
         resultBox.setLayout(new BoxLayout(resultBox, BoxLayout.Y_AXIS));
 
-        //Add the buttons and the text to this panel
+        //Add the buttons and the text to window panel
         window.add(navigationBar, BorderLayout.PAGE_START);
         window.add(logScrollPane, BorderLayout.CENTER);
         window.add(resultBox, BorderLayout.PAGE_END);
     }
-
-    /**
-     * Process the actions from buttons
-     * 
-     * @param e - action event like mouse click or enter
-     */
+    
     @Override
     public void actionPerformed(ActionEvent e)
     {
         //Handle open button action
         if (e.getSource() == openButton)
         {
-            clearOldData();
             openButtonAction();
         }
         else if ((e.getSource() == pathText) &&
                  (ActiveState != State.PROCESSING))
         {
-            clearOldData();
             pathTextEnterPressed();
         }
         else if (e.getSource() == startButton)
@@ -260,8 +255,9 @@ public class MainWindow extends JPanel
      */
     private void openButtonAction()
     {
+        clearOldData();
         //show Dialog window
-        int returnVal = fc.showOpenDialog(MainWindow.this);
+        int returnVal = fc.showOpenDialog(mainWindow);
 
         if (returnVal == JFileChooser.APPROVE_OPTION)
         {
@@ -296,6 +292,7 @@ public class MainWindow extends JPanel
      */
     private void pathTextEnterPressed()
     {
+        clearOldData();
         //Processing string from text field
         String source = pathText.getText();
         text.append(String.format("Processing: %s.%s", source, newline));
@@ -336,6 +333,8 @@ public class MainWindow extends JPanel
 
         if (selectedFile != null) //file contains existing file
         {
+            //java.util.List<VideoSection> possibleAds = finder.ProcessVideo(selectedFile.getAbsolutePath());
+            //prepareResultsForShowing();
 
             //temporary behaviour
             //---------------START--------------------------
@@ -403,7 +402,7 @@ public class MainWindow extends JPanel
 
         for(PossibleAdPanel panel : results)
         {
-            text.append(String.format("%s.%s", panel.getAd().message(), newline));
+            text.append(String.format("%s.%s", panel.message(), newline));
         }
 
         results.clear();
@@ -414,31 +413,18 @@ public class MainWindow extends JPanel
     }
 
     /**
-     * Temporary function for filling array list with fake advertisements
+     * Method for giving VideoSection to PossibleAdPanel
      */
-    private void makeTestingTimes()
+    private void prepareResultsForShowing()
     {
-        PossibleAd pointer;
-
-        //00:01:20 - 00:01:50
-        pointer = new PossibleAd(0, 1, 20, 0, 0, 1, 50, 0, true, false);
-        addAdvertisement(new PossibleAdPanel(pointer));
-
-        //00:13:02 - 00:14:14
-        pointer = new PossibleAd(0, 13, 2, 0, 0, 14, 14, 0, false, false);
-        addAdvertisement(new PossibleAdPanel(pointer));
-
-        //00:20:20 - 00:21:22
-        pointer = new PossibleAd(0, 20, 20, 0, 0, 21, 22, 0, true, true);
-        addAdvertisement(new PossibleAdPanel(pointer));
-
-        //00:22:01 - 00:22:31
-        pointer = new PossibleAd(0, 22, 1, 0, 0, 22, 31, 0, false, true);
-        addAdvertisement(new PossibleAdPanel(pointer));
+        for (int i = 0; i < possibleAds.size(); ++i)
+        {
+            results.add(new PossibleAdPanel(possibleAds.get(i)));
+        }
     }
 
     /**
-     * Function displays results in bottom of window.
+     * Method to displays results in bottom of window.
      * (Data is taken from array list result)
      */
     private void showTimes()
@@ -457,7 +443,25 @@ public class MainWindow extends JPanel
         resultBox.invalidate();
 
         //make them visible
-        this.revalidate();
-        this.repaint();
+        mainWindow.revalidate();
+        mainWindow.repaint();
+    }
+
+    /**
+     * Create JFrame and sets it
+     */
+    public static void createAndShowGUI()
+    {
+        //Create and set up the window
+        JFrame frame = new JFrame("AdCleaner");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Add content to the window
+        frame.add(mainWindow);
+
+        //Size the frame
+        frame.pack();
+        //Display the window
+        frame.setVisible(true);
     }
 }
