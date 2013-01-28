@@ -7,7 +7,7 @@ import cz.cuni.adcleaner.VideoSection;
 /**
  * GUI wrapper for PossibleAd class
  */
-public class PossibleAdPanel extends JPanel {
+public class VideoSectionPanel extends JPanel {
     private VideoSection videoSection;
     private JLabel labelStart, labelEnd;
     private JTextField textStart, textEnd;
@@ -17,7 +17,7 @@ public class PossibleAdPanel extends JPanel {
     private boolean isAd = true;
 
     //Constructor
-    public PossibleAdPanel(VideoSection videosection)
+    public VideoSectionPanel(VideoSection videosection)
     {
         this.videoSection = videosection;
     }

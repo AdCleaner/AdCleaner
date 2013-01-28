@@ -8,35 +8,23 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 
-import cz.cuni.adcleaner.IAdFinder;
-import cz.cuni.adcleaner.Mediator;
+import cz.cuni.adcleaner.IMediator;
+import cz.cuni.adcleaner.IWindow;
 import cz.cuni.adcleaner.VideoSection;
-
 
 /**
  * Runs application where you can choose file
  *
  */
-public class MainWindow implements ActionListener
+public class MainWindow implements ActionListener, IWindow
 {
-    /**
-     * Inner state of application
-     */
-    public enum State {
-        INITIAL, PREPARED, PROCESSING, FINISH
-        /***********************************************************
-         If Processing of file cut takes too long (more then second)
-         then a new state is needed (also Stop button will do more).
-         ***********************************************************/
-    }
-
-    private Mediator pointer;
+    private IMediator mediator;
     private State ActiveState = State.INITIAL;
     static private final String newline = "\n";
     private String URL = "";
     private File file;
-    java.util.List<VideoSection> possibleAds;
-    private ArrayList<PossibleAdPanel> results = new ArrayList<>();
+    java.util.List<VideoSection> videoSections;
+    private ArrayList<VideoSectionPanel> results = new ArrayList<>();
 
     private JLabel label;
     private JTextField pathText;
@@ -44,7 +32,7 @@ public class MainWindow implements ActionListener
     private JTextArea text;
     private JFileChooser fc;
     private JPanel resultBox;
-    private static JPanel mainWindow;
+    private JPanel mainWindow;
 
     /**
      * The selected file is return, but user must check if it's a video file
@@ -74,11 +62,11 @@ public class MainWindow implements ActionListener
     /**
      * You put here results (setter)
      * 
-     * @param Ad - Possible advertisement
+     * @param ad - Possible advertisement
      */
-    public void addAdvertisement(PossibleAdPanel Ad)
+    public void addAdvertisement(VideoSectionPanel ad)
     {
-        results.add(Ad);
+        results.add(ad);
     }
 
     /**
@@ -145,7 +133,6 @@ public class MainWindow implements ActionListener
 
         //sets starting state of application
         this.setStateInitial();
-
     }
     
     /**
@@ -333,7 +320,7 @@ public class MainWindow implements ActionListener
 
         if (selectedFile != null) //file contains existing file
         {
-            //java.util.List<VideoSection> possibleAds = finder.ProcessVideo(selectedFile.getAbsolutePath());
+            //java.util.List<VideoSection> videoSections = finder.ProcessVideo(selectedFile.getAbsolutePath());
             //prepareResultsForShowing();
 
             //temporary behaviour
@@ -346,7 +333,11 @@ public class MainWindow implements ActionListener
                 // TODO: threading
                 // TODO: show them
                 // TODO: call this via main
-                //java.util.List<VideoSection> possibleAds = finder.ProcessVideo(selectedFile.getAbsolutePath());
+                results = new ArrayList<VideoSectionPanel>();
+                for(VideoSection section : mediator.processVideo(selectedFile))
+                {
+                    results.add(new VideoSectionPanel(section));
+                }
             }
             else
             {
@@ -400,7 +391,7 @@ public class MainWindow implements ActionListener
 
         text.append(String.format("--------------------------%s", newline));
 
-        for(PossibleAdPanel panel : results)
+        for(VideoSectionPanel panel : results)
         {
             text.append(String.format("%s.%s", panel.message(), newline));
         }
@@ -410,17 +401,6 @@ public class MainWindow implements ActionListener
         text.append(String.format("--------------------------%s", newline));
 
         showTimes();
-    }
-
-    /**
-     * Method for giving VideoSection to PossibleAdPanel
-     */
-    private void prepareResultsForShowing()
-    {
-        for (int i = 0; i < possibleAds.size(); ++i)
-        {
-            results.add(new PossibleAdPanel(possibleAds.get(i)));
-        }
     }
 
     /**
@@ -450,7 +430,7 @@ public class MainWindow implements ActionListener
     /**
      * Create JFrame and sets it
      */
-    public static void createAndShowGUI()
+    public void createAndShowGUI()
     {
         //Create and set up the window
         JFrame frame = new JFrame("AdCleaner");
@@ -464,4 +444,10 @@ public class MainWindow implements ActionListener
         //Display the window
         frame.setVisible(true);
     }
+
+    @Override
+    public void registerMediator(IMediator mediator) {
+        this.mediator = mediator;
+    }
+
 }

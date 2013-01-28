@@ -1,5 +1,9 @@
 package cz.cuni.adcleaner;
 
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.swing.*;
 
 import cz.cuni.adcleaner.descriptors.*;
@@ -8,34 +12,26 @@ import cz.cuni.adcleaner.gui.MainWindow;
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
-public class Mediator 
-{
-    private static MainWindow window = new MainWindow();
+public class Mediator implements IMediator {
+    private IWindow window;
+    private IAdFinder adFinder;
 
-    /**
-     * Mediator function for program
-     *
-     * @param args program doesn't use them
-     */
-    public static void main( String[] args )
+    public void registerWindow(IWindow window)
     {
-        gui();
-
-        //CaptureScreenToFile.run(args);
-
-        //DescriptorsTest.run();
-
-        //CaptureVideoFrame.run();
+        this.window = window;
+        this.window.registerMediator(this);
     }
 
-    private static void gui() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                //Turn off metal's use of bold fonts
-                UIManager.put("swing.boldMetal", Boolean.FALSE);
-                window.createAndShowGUI();
-            }
-        });
+    public void registerAdFinder(IAdFinder adFinder)
+    {
+        this.adFinder = adFinder;
+    }
+
+    @Override
+    public List<VideoSection> processVideo(File videoFile) {
+        if (this.window == null || this.adFinder == null || !videoFile.exists())
+            return new LinkedList<VideoSection>();
+
+        return this.adFinder.ProcessVideo(videoFile.getAbsolutePath());
     }
 }

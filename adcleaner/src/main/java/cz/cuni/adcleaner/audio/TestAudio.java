@@ -10,7 +10,7 @@ import cz.cuni.adcleaner.VideoSection;
 
 public class TestAudio {
 
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void run(String[] args) throws FileNotFoundException {
 		File videoOut = new File("data/video1_out.mp4");
 		File videoIn = new File("data/video1.mp4");
 		
