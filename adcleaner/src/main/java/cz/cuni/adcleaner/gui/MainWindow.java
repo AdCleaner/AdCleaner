@@ -28,7 +28,7 @@ public class MainWindow implements ActionListener, IWindow
 
     private JLabel label;
     private JTextField pathText;
-    private JButton openButton, startButton, stopButton, processButton;
+    private JButton openButton, processButton, stopButton, cutButton;
     private JTextArea text;
     private JFileChooser fc;
     private JPanel resultBox;
@@ -77,27 +77,27 @@ public class MainWindow implements ActionListener, IWindow
     {
         this.ActiveState = State.INITIAL;
         openButton.setEnabled(true);
-        startButton.setEnabled(false);
-        stopButton.setEnabled(false);
         processButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        cutButton.setEnabled(false);
     }
 
     private void setStatePrepared()
     {
         this.ActiveState = State.PREPARED;
         openButton.setEnabled(true); //you can still choose another file
-        startButton.setEnabled(true);
+        processButton.setEnabled(true);
         stopButton.setEnabled(false);
-        processButton.setEnabled(false);
+        cutButton.setEnabled(false);
     }
 
     private void setStateProcessing()
     {
         this.ActiveState = State.PROCESSING;
         openButton.setEnabled(false);
-        startButton.setEnabled(false);
-        stopButton.setEnabled(true);
         processButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        cutButton.setEnabled(false);
         //Path is disabled in method: actionPerformed(ActionEvent e)
     }
 
@@ -106,9 +106,9 @@ public class MainWindow implements ActionListener, IWindow
         this.ActiveState = State.FINISH;
         openButton.setEnabled(true);
         openButton.setEnabled(false);
-        startButton.setEnabled(false);
+        processButton.setEnabled(false);
         stopButton.setEnabled(false);
-        processButton.setEnabled(true);
+        cutButton.setEnabled(true);
     }
 
     /**
@@ -160,9 +160,9 @@ public class MainWindow implements ActionListener, IWindow
         fc.setCurrentDirectory(new File("C:/"));
 
         //Create the start button.
-        startButton = new JButton("Start");
-        startButton.setToolTipText("Starts search for advertisments in video file.");
-        startButton.addActionListener(this);
+        processButton = new JButton("Process");
+        processButton.setToolTipText("Starts search for advertisments in video file.");
+        processButton.addActionListener(this);
 
         //Create the stop button.
         stopButton = new JButton("Stop");
@@ -170,9 +170,9 @@ public class MainWindow implements ActionListener, IWindow
         stopButton.addActionListener(this);
 
         //Create the process button.
-        processButton = new JButton("Process");
-        processButton.setToolTipText("Cuts advertisements from video.");
-        processButton.addActionListener(this);
+        cutButton = new JButton("Cut");
+        cutButton.setToolTipText("Cuts advertisements from video.");
+        cutButton.addActionListener(this);
 
         //Create the text area so action listeners can refer to it
         //15 lines, 50 chars:
@@ -186,9 +186,9 @@ public class MainWindow implements ActionListener, IWindow
         navigationBar.add(label);
         navigationBar.add(pathText);
         navigationBar.add(openButton);
-        navigationBar.add(startButton);
-        navigationBar.add(stopButton);
         navigationBar.add(processButton);
+        navigationBar.add(stopButton);
+        navigationBar.add(cutButton);
 
         //For result layout purpose
         resultBox = new JPanel();
@@ -213,17 +213,17 @@ public class MainWindow implements ActionListener, IWindow
         {
             pathTextEnterPressed();
         }
-        else if (e.getSource() == startButton)
+        else if (e.getSource() == processButton)
         {
-            startButtonAction();
+            processButtonAction();
         }
         else if (e.getSource() == stopButton)
         {
             stopButtonAction();
         }
-        else if (e.getSource() == processButton)
+        else if (e.getSource() == cutButton)
         {
-            processButtonAction();
+            cutButtonAction();
         }
     }
 
@@ -313,37 +313,26 @@ public class MainWindow implements ActionListener, IWindow
     /**
      * Action performed when start button is pressed
      */
-    private void startButtonAction()
+    private void processButtonAction()
     {
         this.setStateProcessing();
         File selectedFile = getSelectedFile();
 
         if (selectedFile != null) //file contains existing file
         {
-            //java.util.List<VideoSection> videoSections = finder.ProcessVideo(selectedFile.getAbsolutePath());
-            //prepareResultsForShowing();
+            // TODO: threading
+            videoSections = mediator.processVideo(selectedFile);
+            prepareResultsForShowing();
 
-            //temporary behaviour
-            //---------------START--------------------------
-            text.append(String.format("Scanning file: %s.%s", selectedFile.getName(), newline));
-            if (file.getName().contains(".txt"))
+            /*results = new ArrayList<VideoSectionPanel>();
+            for(VideoSection section : mediator.processVideo(selectedFile))
             {
-                text.append(String.format("Adding buttons.%s", newline));
-
-                // TODO: threading
-                // TODO: show them
-                // TODO: call this via main
-                results = new ArrayList<VideoSectionPanel>();
-                for(VideoSection section : mediator.processVideo(selectedFile))
-                {
-                    results.add(new VideoSectionPanel(section));
-                }
-            }
-            else
-            {
-                text.append(String.format("It's not a txt file.%s", newline));
-            }
-            //---------------END---------------------------
+                results.add(new VideoSectionPanel(section));
+            }*/
+            
+            // TODO: show them
+            // TODO: call this via main
+             
         }
 
         if (!URL.equals("")) //URL contains http://
@@ -378,7 +367,7 @@ public class MainWindow implements ActionListener, IWindow
     /**
      * Action performed when process button is pressed
      */
-    private void processButtonAction()
+    private void cutButtonAction()
     {
         this.setStatePrepared();
         //TODO maybe enabled Stop button if processing takes too long
@@ -445,9 +434,21 @@ public class MainWindow implements ActionListener, IWindow
         frame.setVisible(true);
     }
 
+    /**
+     * Function for transforming results into panels
+     * VideoSection => VideoSectionPanel
+     */
+    private void prepareResultsForShowing()
+    {
+        for (int i = 0; i < videoSections.size(); ++i)
+        {
+            results.add(new VideoSectionPanel(videoSections.get(i)));
+        }
+        showTimes();
+    }
+
     @Override
     public void registerMediator(IMediator mediator) {
         this.mediator = mediator;
     }
-
 }

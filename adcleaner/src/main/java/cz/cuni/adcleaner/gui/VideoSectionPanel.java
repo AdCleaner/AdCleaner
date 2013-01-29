@@ -148,7 +148,7 @@ public class VideoSectionPanel extends JPanel {
         advertisement.setToolTipText("If it is not an advertisement uncheck.");
 
         //CheckBox for selecting if it will be cut from video
-        cutFromVideo = new JCheckBox("Crop");
+        cutFromVideo = new JCheckBox("Cut it out?");
         cutFromVideo.setSelected(toCut);
         cutFromVideo.setToolTipText("Cut this advertisement from video file.");
 
