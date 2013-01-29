@@ -321,14 +321,8 @@ public class MainWindow implements ActionListener, IWindow
         if (selectedFile != null) //file contains existing file
         {
             // TODO: threading!!!
-            videoSections = mediator.processVideo(selectedFile);
-            prepareResultsForShowing();
-
-            /*results = new ArrayList<VideoSectionPanel>();
-            for(VideoSection section : mediator.processVideo(selectedFile))
-            {
-                results.add(new VideoSectionPanel(section));
-            }*/
+            //HERE will be calling of method from mediator to start processing
+            this.processingDone(mediator.processVideo(selectedFile));
         }
 
         if (!URL.equals("")) //URL contains http://
@@ -344,7 +338,8 @@ public class MainWindow implements ActionListener, IWindow
      */
     private void stopButtonAction()
     {
-        //TODO: Kill processing thread - Stream processing/File Processing
+        // TODO: Kill processing thread - Stream processing/File Processing
+        //HERE will be calling of method from mediator to stop processing
 
         text.append(String.format("Stopping current action.%s", newline));
 
@@ -440,6 +435,9 @@ public class MainWindow implements ActionListener, IWindow
      */
     private void prepareResultsForShowing()
     {
+        //delete old data
+        results.clear();
+
         //make panels from result
         for (int i = 0; i < videoSections.size(); ++i)
         {
@@ -453,5 +451,20 @@ public class MainWindow implements ActionListener, IWindow
     @Override
     public void registerMediator(IMediator mediator) {
         this.mediator = mediator;
+    }
+
+    /**
+     * Method, which is called when are all advertisements found in file
+     */
+    public void processingDone(java.util.List<VideoSection> results)
+    {
+        //save results
+        videoSections = results;
+
+        //change results
+        prepareResultsForShowing();
+
+        //set state to done
+        setStateFinish();
     }
 }
