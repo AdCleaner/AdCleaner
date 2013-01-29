@@ -3,6 +3,7 @@ package cz.cuni.adcleaner.gui;
 import javax.swing.*;
 
 import cz.cuni.adcleaner.VideoSection;
+import java.util.concurrent.TimeUnit;
 
 /**
  * GUI wrapper for PossibleAd class
@@ -32,6 +33,8 @@ public class VideoSectionPanel extends JPanel {
     /**
      * Sets the time from textFields
      * If not in right form the Program crashes!!!
+     * NOT WORKING RIGHT NOW
+     * because videoSection is final (final start, final end)
      */
     public void setInfoFromGUI()
     {
@@ -48,17 +51,25 @@ public class VideoSectionPanel extends JPanel {
         start += Integer.parseInt(startTime[1]);
         start *= 60; // now in seconds
         start += Integer.parseInt(startTime[2]);
-        start *= 1000; // now in miliseconds
-        start += Integer.parseInt(startTime[3]);
+        if (videoSection.getTimeuUnit() == TimeUnit.MILLISECONDS)
+        {
+            start *= 1000; // now in miliseconds
+            start += Integer.parseInt(startTime[3]);
+        }
 
         long end = Integer.parseInt(endTime[0]);
         end *= 60; //now in minutes
         end += Integer.parseInt(endTime[1]);
         end *= 60; // now in seconds
         end += Integer.parseInt(endTime[2]);
-        end *= 1000; // now in miliseconds
-        end += Integer.parseInt(endTime[3]);
+        if (videoSection.getTimeuUnit() == TimeUnit.MILLISECONDS)
+        {
+            end *= 1000; // now in miliseconds
+            end += Integer.parseInt(endTime[3]);
+        }
 
+        //not working right now...
+        //TODO add them to videosection maybe
         isAd = advertisement.isSelected();
         toCut = cutFromVideo.isSelected();
     }
@@ -72,6 +83,10 @@ public class VideoSectionPanel extends JPanel {
     {
         String result = "";
         long start = this.videoSection.getStart();
+        if (videoSection.getTimeuUnit() == TimeUnit.SECONDS)
+        {
+            start *= 1000;
+        }
         int milisecond = (int) (start % 1000);
         start /= 1000;
         int second = (int) (start % 60);
@@ -100,6 +115,10 @@ public class VideoSectionPanel extends JPanel {
     {
         String result = "";
         long end = this.videoSection.getEnd();
+        if (videoSection.getTimeuUnit() == TimeUnit.SECONDS)
+        {
+            end *= 1000;
+        }
         int milisecond = (int) (end % 1000);
         end /= 1000;
         int second = (int) (end % 60);

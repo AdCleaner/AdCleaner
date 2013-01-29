@@ -17,7 +17,7 @@ public final class VideoSection implements Comparable<VideoSection> {
 		this.end = Math.max(start, end);
 		this.timeuUnit = timeuUnit;
 	}
-
+        
 	public long getStart() {
 		return start;
 	}

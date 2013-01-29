@@ -320,7 +320,7 @@ public class MainWindow implements ActionListener, IWindow
 
         if (selectedFile != null) //file contains existing file
         {
-            // TODO: threading
+            // TODO: threading!!!
             videoSections = mediator.processVideo(selectedFile);
             prepareResultsForShowing();
 
@@ -329,17 +329,12 @@ public class MainWindow implements ActionListener, IWindow
             {
                 results.add(new VideoSectionPanel(section));
             }*/
-            
-            // TODO: show them
-            // TODO: call this via main
-             
         }
 
         if (!URL.equals("")) //URL contains http://
         {
             //validation of URL is needed (also if URL exists)
-            text.append(String.format("Connecting to URL: %s.%s", URL, newline));
-            //TODO ADD HERE method for Stream detection
+            text.append(String.format("URL is not supported right now."));
         }
         this.setStateFinish();
     }
@@ -385,10 +380,15 @@ public class MainWindow implements ActionListener, IWindow
             text.append(String.format("%s.%s", panel.message(), newline));
         }
 
+        //remove VideoSectionPanels for listing
         results.clear();
+        
+        //remove VideoSection as result of finding advertisements
+        videoSections.clear();
 
         text.append(String.format("--------------------------%s", newline));
 
+        //revalidate, repaint and remove result lines
         showTimes();
     }
 
@@ -440,10 +440,13 @@ public class MainWindow implements ActionListener, IWindow
      */
     private void prepareResultsForShowing()
     {
+        //make panels from result
         for (int i = 0; i < videoSections.size(); ++i)
         {
             results.add(new VideoSectionPanel(videoSections.get(i)));
         }
+
+        //show them
         showTimes();
     }
 
