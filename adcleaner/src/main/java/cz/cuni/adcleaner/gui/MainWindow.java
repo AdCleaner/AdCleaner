@@ -4,7 +4,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.List;
 
 import javax.swing.*;
 
@@ -34,9 +35,88 @@ public class MainWindow implements ActionListener, IWindow
     private JPanel resultBox;
     private JPanel mainWindow;
 
+    @Override
+    public void registerMediator(IMediator mediator) {
+        this.mediator = mediator;
+    }
+
+    @Override
+    public void processResults(java.util.List<VideoSection> videoSections) {
+        processingDone(videoSections);
+    }
+
+    /**
+     * Constructor - creates window and its layout
+     */
+    public MainWindow()
+    {
+        //create main Window
+        mainWindow = new JPanel();
+        mainWindow.setLayout(new BorderLayout());
+
+        //Creates and fills the with content
+        JPanel window = new JPanel();
+        window.setLayout(new BorderLayout());
+        this.MainWindowContent(window);
+
+        //makes it scrollable
+        JScrollPane mainWindowContent = new JScrollPane(window);
+
+        //put it into window
+        mainWindow.add(mainWindowContent);
+
+        //sets starting state of application
+        this.setStateInitial();
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        //Handle open button action
+        if (e.getSource() == openButton)
+        {
+            openButtonAction();
+        }
+        else if ((e.getSource() == pathText) &&
+                 (ActiveState != State.PROCESSING))
+        {
+            pathTextEnterPressed();
+        }
+        else if (e.getSource() == processButton)
+        {
+            processButtonAction();
+        }
+        else if (e.getSource() == stopButton)
+        {
+            stopButtonAction();
+        }
+        else if (e.getSource() == cutButton)
+        {
+            cutButtonAction();
+        }
+    }
+
+    /**
+     * Create JFrame and sets it
+     */
+    public void createAndShowGUI()
+    {
+        //Create and set up the window
+        JFrame frame = new JFrame("AdCleaner");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //Add content to the window
+        frame.add(mainWindow);
+
+        //Size the frame
+        frame.pack();
+        //Display the window
+        frame.setVisible(true);
+    }
+
     /**
      * The selected file is return, but user must check if it's a video file
-     * 
+     *
      * @return Returns selected file or null if file doesn't exist
      */
     private File getSelectedFile()
@@ -47,26 +127,6 @@ public class MainWindow implements ActionListener, IWindow
         }
 
         return null;
-    }
-
-    /**
-     * User must check if URL exist and is valid
-     * 
-     * @return Returns string URL or "" if URL is empty
-     */
-    public String getURL()
-    {
-        return URL;
-    }
-
-    /**
-     * You put here results (setter)
-     * 
-     * @param ad - Possible advertisement
-     */
-    public void addAdvertisement(VideoSectionPanel ad)
-    {
-        results.add(ad);
     }
 
     /**
@@ -109,30 +169,6 @@ public class MainWindow implements ActionListener, IWindow
         processButton.setEnabled(false);
         stopButton.setEnabled(false);
         cutButton.setEnabled(true);
-    }
-
-    /**
-     * Constructor - creates window and its layout
-     */
-    public MainWindow()
-    {
-        //create main Window
-        mainWindow = new JPanel();
-        mainWindow.setLayout(new BorderLayout());
-
-        //Creates and fills the with content
-        JPanel window = new JPanel();
-        window.setLayout(new BorderLayout());
-        this.MainWindowContent(window);
-
-        //makes it scrollable
-        JScrollPane mainWindowContent = new JScrollPane(window);
-
-        //put it into window
-        mainWindow.add(mainWindowContent);
-
-        //sets starting state of application
-        this.setStateInitial();
     }
     
     /**
@@ -198,33 +234,6 @@ public class MainWindow implements ActionListener, IWindow
         window.add(navigationBar, BorderLayout.PAGE_START);
         window.add(logScrollPane, BorderLayout.CENTER);
         window.add(resultBox, BorderLayout.PAGE_END);
-    }
-    
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-        //Handle open button action
-        if (e.getSource() == openButton)
-        {
-            openButtonAction();
-        }
-        else if ((e.getSource() == pathText) &&
-                 (ActiveState != State.PROCESSING))
-        {
-            pathTextEnterPressed();
-        }
-        else if (e.getSource() == processButton)
-        {
-            processButtonAction();
-        }
-        else if (e.getSource() == stopButton)
-        {
-            stopButtonAction();
-        }
-        else if (e.getSource() == cutButton)
-        {
-            cutButtonAction();
-        }
     }
 
     /**
@@ -320,9 +329,7 @@ public class MainWindow implements ActionListener, IWindow
 
         if (selectedFile != null) //file contains existing file
         {
-            // TODO: threading!!!
-            //HERE will be calling of method from mediator to start processing
-            this.processingDone(mediator.processVideo(selectedFile));
+            mediator.startVideoProcessing(selectedFile.getAbsolutePath());
         }
 
         if (!URL.equals("")) //URL contains http://
@@ -338,8 +345,11 @@ public class MainWindow implements ActionListener, IWindow
      */
     private void stopButtonAction()
     {
-        // TODO: Kill processing thread - Stream processing/File Processing
-        //HERE will be calling of method from mediator to stop processing
+        if (!this.mediator.stopProcessing())
+        {
+            text.append(String.format("Failed to stop the processing.%s", newline));
+            return;
+        }
 
         text.append(String.format("Stopping current action.%s", newline));
 
@@ -412,24 +422,6 @@ public class MainWindow implements ActionListener, IWindow
     }
 
     /**
-     * Create JFrame and sets it
-     */
-    public void createAndShowGUI()
-    {
-        //Create and set up the window
-        JFrame frame = new JFrame("AdCleaner");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //Add content to the window
-        frame.add(mainWindow);
-
-        //Size the frame
-        frame.pack();
-        //Display the window
-        frame.setVisible(true);
-    }
-
-    /**
      * Function for transforming results into panels
      * VideoSection => VideoSectionPanel
      */
@@ -448,15 +440,10 @@ public class MainWindow implements ActionListener, IWindow
         showTimes();
     }
 
-    @Override
-    public void registerMediator(IMediator mediator) {
-        this.mediator = mediator;
-    }
-
     /**
      * Method, which is called when are all advertisements found in file
      */
-    public void processingDone(java.util.List<VideoSection> results)
+    private void processingDone(java.util.List<VideoSection> results)
     {
         //save results
         videoSections = results;

@@ -25,13 +25,24 @@ public class Mediator implements IMediator {
     public void registerAdFinder(IAdFinder adFinder)
     {
         this.adFinder = adFinder;
+        this.adFinder.registerMediator(this);
     }
 
     @Override
-    public List<VideoSection> processVideo(File videoFile) {
-        if (this.window == null || this.adFinder == null || !videoFile.exists())
-            return new LinkedList<VideoSection>();
+    public boolean startVideoProcessing(String videoFilePath) {
+        if (this.window == null || this.adFinder == null)
+            return false;
 
-        return this.adFinder.ProcessVideo(videoFile.getAbsolutePath());
+        return this.adFinder.startVideoProcessing(videoFilePath);
+    }
+
+    @Override
+    public boolean stopProcessing() {
+        return this.adFinder.stopVideoProcessing();
+    }
+
+    @Override
+    public void publishResults(List<VideoSection> videoSections) {
+        this.window.processResults(videoSections);
     }
 }

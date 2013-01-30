@@ -12,5 +12,9 @@ public interface IMediator {
 
     void registerAdFinder(IAdFinder adFinder);
 
-    List<VideoSection> processVideo(File videoFile);
+    boolean startVideoProcessing(String videoFilePath);
+
+    boolean stopProcessing();
+
+    void publishResults(List<VideoSection> videoSections);
 }

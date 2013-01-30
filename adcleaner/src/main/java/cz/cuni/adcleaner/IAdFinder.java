@@ -7,6 +7,9 @@ import java.util.List;
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public interface IAdFinder {
+    boolean stopVideoProcessing();
 
-    List<VideoSection> ProcessVideo(String videoFilePath);
+    boolean startVideoProcessing(String videoFilePath);
+
+    void registerMediator(IMediator mediator);
 }

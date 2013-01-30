@@ -24,11 +24,12 @@ public class Main {
     {
         try
         {
-            Mediator mediator = new Mediator();
+            IMediator mediator = new Mediator();
             final MainWindow window = new MainWindow();
+            IAdFinder adFinder = new AdFinder();
 
             mediator.registerWindow(window);
-            mediator.registerAdFinder(new FakeAdFinder());
+            mediator.registerAdFinder(adFinder);
 
             // Show MainWindow
             SwingUtilities.invokeLater(new Runnable() {
@@ -40,13 +41,16 @@ public class Main {
                 }
             });
 
-            //CaptureScreenToFile.run(args);
+            /*
+            CaptureScreenToFile.run(args);
 
-            //DescriptorsTest.run();
+            DescriptorsTest.run();
 
-            //CaptureVideoFrame.run();
+            CaptureVideoFrame.run();
 
-            //TestAudio.run(args);
+            TestAudio.run(args);
+            */
+
         }
         catch (Exception ex)
         {
