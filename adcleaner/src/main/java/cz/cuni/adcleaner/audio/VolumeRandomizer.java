@@ -19,7 +19,7 @@ public class VolumeRandomizer {
 	 * @param louderSections
 	 *            volume of these sections will be scales
 	 * @param volumeScale
-	 *            by how much will be volume scales value from interval (0,1)
+	 *            by how much will be volume scales mark from interval (0,1)
 	 */
 	public VolumeRandomizer(List<VideoSection> louderSections, double volumeScale) {
 		this.louderSections = louderSections;
@@ -51,7 +51,7 @@ public class VolumeRandomizer {
 		public void onAudioSamples(IAudioSamplesEvent event) {
 			if (sectionIterator < randomSections.size()) {
 				VideoSection currentSection = randomSections.get(sectionIterator);
-				Long timeStamp = event.getTimeStamp(currentSection.getTimeuUnit());
+				Long timeStamp = event.getTimeStamp(currentSection.getTimeUnit());
 				if (currentSection.getStart() < timeStamp) {
 					if (currentSection.getEnd() < timeStamp) {
 						sectionIterator++;

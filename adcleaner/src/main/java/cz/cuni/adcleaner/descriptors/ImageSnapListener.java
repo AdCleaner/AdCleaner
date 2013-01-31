@@ -1,33 +1,31 @@
 package cz.cuni.adcleaner.descriptors;
 
-import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
-
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 /**
 * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
 */
 public class ImageSnapListener extends MediaToolAdapter {
-    private static final double SECONDS_BETWEEN_FRAMES = 50;
-
-    private static final String outputFilePrefix = "c:/Temp/mysnapshot";
+    private final double SECONDS_BETWEEN_FRAMES = 5;
 
     // The video stream index, used to ensure we display frames from one and
     // only one video stream from the media container.
-    private static int mVideoStreamIndex = -1;
+    private int mVideoStreamIndex = -1;
 
     // Time of last frame write
-    private static long mLastPtsWrite = Global.NO_PTS;
+    private long mLastPtsWrite = Global.NO_PTS;
 
-    public static final long MICRO_SECONDS_BETWEEN_FRAMES =
+    private final long MICRO_SECONDS_BETWEEN_FRAMES =
         (long)(Global.DEFAULT_PTS_PER_SECOND * SECONDS_BETWEEN_FRAMES);
+
+    private ScreenShotsManager manager;
+
+    public ImageSnapListener(ScreenShotsManager manager)
+    {
+       this.manager = manager;
+    }
 
     public void onVideoPicture(IVideoPictureEvent event) {
 
@@ -46,35 +44,17 @@ public class ImageSnapListener extends MediaToolAdapter {
             mLastPtsWrite = event.getTimeStamp() - MICRO_SECONDS_BETWEEN_FRAMES;
 
         // if it's time to write the next frame
-        if (event.getTimeStamp() - mLastPtsWrite >=
-                MICRO_SECONDS_BETWEEN_FRAMES) {
+        if (event.getTimeStamp() - mLastPtsWrite >= MICRO_SECONDS_BETWEEN_FRAMES) {
+            // Get media timeStamp
+            long seconds = event.getTimeStamp() / Global.DEFAULT_PTS_PER_SECOND;
 
-            String outputFilename = dumpImageToFile(event.getImage());
+            manager.saveScreenshot(event.getImage(), seconds);
 
-            // indicate file written
-            double seconds = ((double) event.getTimeStamp()) /
-                Global.DEFAULT_PTS_PER_SECOND;
-            System.out.printf(
-                    "at elapsed time of %6.3f seconds wrote: %s\n",
-                    seconds, outputFilename);
+            System.out.printf("at elapsed time of %s seconds.\n",seconds);
 
             // update last write time
             mLastPtsWrite += MICRO_SECONDS_BETWEEN_FRAMES;
         }
 
     }
-
-    private String dumpImageToFile(BufferedImage image) {
-        try {
-            String outputFilename = outputFilePrefix +
-                 System.currentTimeMillis() + ".png";
-            ImageIO.write(image, "png", new File(outputFilename));
-            return outputFilename;
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 }

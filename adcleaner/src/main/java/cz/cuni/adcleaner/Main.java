@@ -31,6 +31,7 @@ public class Main {
             mediator.registerWindow(window);
             mediator.registerAdFinder(adFinder);
 
+            ///*
             // Show MainWindow
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -40,11 +41,14 @@ public class Main {
                     window.createAndShowGUI();
                 }
             });
+            //*/
+
+            //DescriptorsTest.run();
 
             /*
             CaptureScreenToFile.run(args);
 
-            DescriptorsTest.run();
+
 
             CaptureVideoFrame.run();
 

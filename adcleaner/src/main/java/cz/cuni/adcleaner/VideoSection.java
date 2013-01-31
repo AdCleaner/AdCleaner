@@ -2,20 +2,20 @@ package cz.cuni.adcleaner;
 
 import java.util.concurrent.TimeUnit;
 
-public final class VideoSection implements Comparable<VideoSection> {
+public class VideoSection implements Comparable<VideoSection> {
 
-	private final Long start;
-	private final Long end;
-	private final TimeUnit timeuUnit;
+	private Long start;
+	private Long end;
+	private TimeUnit timeUnit;
 
 	public VideoSection(Long start, Long end) {
 		this(start, end, TimeUnit.MILLISECONDS);
 	}
 
-	public VideoSection(Long start, Long end, TimeUnit timeuUnit) {
+	public VideoSection(Long start, Long end, TimeUnit timeUnit) {
 		this.start = Math.min(start, end);
 		this.end = Math.max(start, end);
-		this.timeuUnit = timeuUnit;
+		this.timeUnit = timeUnit;
 	}
         
 	public long getStart() {
@@ -30,8 +30,8 @@ public final class VideoSection implements Comparable<VideoSection> {
 		return end - start;
 	}
 
-	public TimeUnit getTimeuUnit() {
-		return timeuUnit;
+	public TimeUnit getTimeUnit() {
+		return timeUnit;
 	}
 	
 	public boolean isInSection(long time) {
@@ -46,6 +46,6 @@ public final class VideoSection implements Comparable<VideoSection> {
 
 	@Override
 	public String toString() {
-		return "VideoSection [start=" + start + ", end=" + end + ", timeuUnit=" + timeuUnit + "]";
+		return "VideoSection [start=" + start + ", end=" + end + ", timeUnit=" + timeUnit + "]";
 	}
 }

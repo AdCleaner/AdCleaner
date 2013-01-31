@@ -51,7 +51,7 @@ public class VideoSectionPanel extends JPanel {
         start += Integer.parseInt(startTime[1]);
         start *= 60; // now in seconds
         start += Integer.parseInt(startTime[2]);
-        if (videoSection.getTimeuUnit() == TimeUnit.MILLISECONDS)
+        if (videoSection.getTimeUnit() == TimeUnit.MILLISECONDS)
         {
             start *= 1000; // now in miliseconds
             start += Integer.parseInt(startTime[3]);
@@ -62,7 +62,7 @@ public class VideoSectionPanel extends JPanel {
         end += Integer.parseInt(endTime[1]);
         end *= 60; // now in seconds
         end += Integer.parseInt(endTime[2]);
-        if (videoSection.getTimeuUnit() == TimeUnit.MILLISECONDS)
+        if (videoSection.getTimeUnit() == TimeUnit.MILLISECONDS)
         {
             end *= 1000; // now in miliseconds
             end += Integer.parseInt(endTime[3]);
@@ -83,7 +83,7 @@ public class VideoSectionPanel extends JPanel {
     {
         String result = "";
         long start = this.videoSection.getStart();
-        if (videoSection.getTimeuUnit() == TimeUnit.SECONDS)
+        if (videoSection.getTimeUnit() == TimeUnit.SECONDS)
         {
             start *= 1000;
         }
@@ -115,7 +115,7 @@ public class VideoSectionPanel extends JPanel {
     {
         String result = "";
         long end = this.videoSection.getEnd();
-        if (videoSection.getTimeuUnit() == TimeUnit.SECONDS)
+        if (videoSection.getTimeUnit() == TimeUnit.SECONDS)
         {
             end *= 1000;
         }

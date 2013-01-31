@@ -336,8 +336,8 @@ public class MainWindow implements ActionListener, IWindow
         {
             //validation of URL is needed (also if URL exists)
             text.append(String.format("URL is not supported right now."));
+            this.setStateFinish();
         }
-        this.setStateFinish();
     }
 
     /**

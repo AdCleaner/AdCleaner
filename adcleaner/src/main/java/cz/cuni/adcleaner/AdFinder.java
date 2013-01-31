@@ -8,26 +8,28 @@ import java.util.concurrent.TimeUnit;
 import cz.cuni.adcleaner.audio.MediaToolApplier;
 import cz.cuni.adcleaner.audio.VolumeElevationDetectorAdapter;
 import cz.cuni.adcleaner.descriptors.ImageSnapListener;
+import cz.cuni.adcleaner.descriptors.ScreenShotsManager;
 
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public class AdFinder implements IAdFinder {
     private Thread processThread = null;
-    private MediaToolApplier applier;
     private IMediator mediator;
+    private ScreenShotsManager manager;
 
     @Override
     public boolean stopVideoProcessing() {
-        if (processThread == null)
-            return false;
+        // First clean created data ...
+        cleanUp();
 
-        if (!processThread.isAlive())
+        // Then attempt to stop the processThread
+        if (processThread == null || !processThread.isAlive())
             return false;
 
         // Didn't find any better way to kill the thread
         processThread.stop();
-        return  true;
+        return true;
     }
 
     private List<VideoSection> getProcessingResults() {
@@ -55,21 +57,25 @@ public class AdFinder implements IAdFinder {
                 long calibrationIntervalLength = 20;
                 double maxElevation = 1.2;
 
-                try
-                {
-                    applier = new MediaToolApplier(video);
-                    applier.apply(new ImageSnapListener());
-                    applier.apply(new VolumeElevationDetectorAdapter(
+                manager = new ScreenShotsManager(video.getName());
+
+                VolumeElevationDetectorAdapter volumeAdapter =
+                    new VolumeElevationDetectorAdapter(
                         numberOfContinuousSections,
                         maxElevation,
                         granularity,
-                        calibrationIntervalLength)
-                    );
+                        calibrationIntervalLength,
+                        manager);
+                try
+                {
+                    MediaToolApplier applier = new MediaToolApplier(video);
+                    applier.apply(new ImageSnapListener(manager));
+                    applier.apply(volumeAdapter);
 
                     applier.run();
 
                     System.out.println("publishing results");
-                    mediator.publishResults(getProcessingResults());
+                    mediator.publishResults(volumeAdapter.getLouderSections());
                 }
                 catch (Exception ex)
                 {
@@ -91,5 +97,10 @@ public class AdFinder implements IAdFinder {
     @Override
     public void registerMediator(IMediator mediator) {
         this.mediator = mediator;
+    }
+
+    private void cleanUp()
+    {
+        //this.manager.cleanUp();
     }
 }

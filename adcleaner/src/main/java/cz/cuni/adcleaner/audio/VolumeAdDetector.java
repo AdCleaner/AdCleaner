@@ -4,77 +4,79 @@ import java.io.File;
 import java.util.List;
 
 import cz.cuni.adcleaner.VideoSection;
+import cz.cuni.adcleaner.descriptors.ScreenShotsManager;
 
 
 public class VolumeAdDetector {
-	private int granularity = 5;
-	private int numberOfContinousSections = 5;
-	private long callibrationIntervalLength = 20;
-	private double maxElevation = 1.2;
-	private final File video;
 
-	public VolumeAdDetector(File video) {
-		this.video = video;
-	}
+    private int granularity = 5;
+    private int numberOfContinousSections = 5;
+    private long callibrationIntervalLength = 20;
+    private double maxElevation = 1.2;
+    private final File video;
 
-	public int getNumberOfContinousSections() {
-		return numberOfContinousSections;
-	}
+    public VolumeAdDetector(File video) {
+        this.video = video;
+    }
 
-	/**
-	 * How much must the new volume exceed the variation of volume in normal section.
-	 * Should be value higher than 1.
-	 * @param numberOfContinousSections
-	 */
-	public void setNumberOfContinousSections(int numberOfContinousSections) {
-		this.numberOfContinousSections = numberOfContinousSections;
-	}
+    public int getNumberOfContinousSections() {
+        return numberOfContinousSections;
+    }
 
-	public double getMaxElevation() {
-		return maxElevation;
-	}
+    /**
+     * How much must the new volume exceed the variation of volume in normal section. Should be mark
+     * higher than 1.
+     */
+    public void setNumberOfContinousSections(int numberOfContinousSections) {
+        this.numberOfContinousSections = numberOfContinousSections;
+    }
 
-	public void setMaxElevation(double maxElevation) {
-		this.maxElevation = maxElevation;
-	}
+    public double getMaxElevation() {
+        return maxElevation;
+    }
 
-	/**
-	 * In seconds
-	 * 
-	 * @return
-	 */
-	public int getGranularity() {
-		return granularity;
-	}
+    public void setMaxElevation(double maxElevation) {
+        this.maxElevation = maxElevation;
+    }
 
-	/**
-	 * In seconds
-	 * 
-	 * @param granularity
-	 */
-	public void setGranularity(int granularity) {
-		this.granularity = granularity;
-	}
-	
-	/**
-	 * In seconds
-	 * @return
-	 */
-	public long getCallibrationIntervalLength() {
-		return callibrationIntervalLength;
-	}
-	
-	/**
-	 * In seconds
-	 * @param callibrationIntervalLength
-	 */
-	public void setCallibrationIntervalLength(long callibrationIntervalLength) {
-		this.callibrationIntervalLength = callibrationIntervalLength;
-	}
+    /**
+     * In seconds
+     */
+    public int getGranularity() {
+        return granularity;
+    }
 
-	public List<VideoSection> run() {
-		VolumeElevationDetectorAdapter mediaTool = new VolumeElevationDetectorAdapter(numberOfContinousSections, maxElevation, granularity, callibrationIntervalLength);
-		new MediaToolApplier(video).apply(mediaTool);
-		return mediaTool.getLouderSections();
-	}
+    /**
+     * In seconds
+     */
+    public void setGranularity(int granularity) {
+        this.granularity = granularity;
+    }
+
+    /**
+     * In seconds
+     */
+    public long getCallibrationIntervalLength() {
+        return callibrationIntervalLength;
+    }
+
+    /**
+     * In seconds
+     */
+    public void setCallibrationIntervalLength(long callibrationIntervalLength) {
+        this.callibrationIntervalLength = callibrationIntervalLength;
+    }
+
+    public List<VideoSection> run() {
+        VolumeElevationDetectorAdapter mediaTool = new VolumeElevationDetectorAdapter(
+            numberOfContinousSections,
+            maxElevation,
+            granularity,
+            callibrationIntervalLength,
+            new ScreenShotsManager(video.getName())
+        );
+        new MediaToolApplier(video).apply(mediaTool);
+
+        return mediaTool.getLouderSections();
+    }
 }

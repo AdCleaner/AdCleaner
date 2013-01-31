@@ -17,7 +17,7 @@ import com.xuggle.xuggler.Global;
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public class CaptureVideoFrame {
-    private static final String inputFilename = "data/video1.mp4";
+    private static final String inputFilename = "data/video1_out.mp4";
 
     public static void run() {
 
@@ -26,11 +26,13 @@ public class CaptureVideoFrame {
         // stipulate that we want BufferedImages created in BGR 24bit color space
         mediaReader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 
-        mediaReader.addListener(new ImageSnapListener());
-
+        ScreenShotsManager manager = new ScreenShotsManager(new File(inputFilename).getName());
+        mediaReader.addListener(new ImageSnapListener(manager));
         // read out the contents of the media file and
         // dispatch events to the attached listener
         while (mediaReader.readPacket() == null) ;
 
+        System.out.println("1: " + manager.compareScreensForShotBoundary(1));
+        System.out.println("150: " + manager.compareScreensForShotBoundary(150));
     }
 }
