@@ -18,6 +18,11 @@ public class VideoSection implements Comparable<VideoSection> {
 		this.timeUnit = timeUnit;
 	}
         
+        public void setTime(Long startTime, Long endTime) {
+            start = startTime;
+            end = endTime;
+        }
+        
 	public long getStart() {
 		return start;
 	}

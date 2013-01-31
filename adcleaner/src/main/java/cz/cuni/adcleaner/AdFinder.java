@@ -101,6 +101,6 @@ public class AdFinder implements IAdFinder {
 
     private void cleanUp()
     {
-        //this.manager.cleanUp();
+        this.manager.cleanUp();
     }
 }
