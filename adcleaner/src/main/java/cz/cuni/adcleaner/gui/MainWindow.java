@@ -11,6 +11,7 @@ import javax.swing.*;
 
 import cz.cuni.adcleaner.IMediator;
 import cz.cuni.adcleaner.IWindow;
+import cz.cuni.adcleaner.VideoFileFilter;
 import cz.cuni.adcleaner.VideoSection;
 
 /**
@@ -34,6 +35,7 @@ public class MainWindow implements ActionListener, IWindow
     private JFileChooser fc;
     private JPanel resultBox;
     private JPanel mainWindow;
+    private JFrame frame;
 
     @Override
     public void registerMediator(IMediator mediator) {
@@ -102,7 +104,7 @@ public class MainWindow implements ActionListener, IWindow
     public void createAndShowGUI()
     {
         //Create and set up the window
-        JFrame frame = new JFrame("AdCleaner");
+        frame = new JFrame("AdCleaner");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add content to the window
@@ -193,6 +195,9 @@ public class MainWindow implements ActionListener, IWindow
         //Create a file chooser
         fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        VideoFileFilter videoFilter = new VideoFileFilter();
+        fc.addChoosableFileFilter(videoFilter);
+        fc.setFileFilter(videoFilter);
         fc.setCurrentDirectory(new File("C:/"));
 
         //Create the start button.
@@ -414,6 +419,9 @@ public class MainWindow implements ActionListener, IWindow
             results.get(i).putIntoPanel(resultLine);
             resultBox.add(resultLine);
         }
+        
+        //sets size of window and repaints it
+        frame.pack();
         resultBox.invalidate();
 
         //make them visible
@@ -443,11 +451,11 @@ public class MainWindow implements ActionListener, IWindow
     /**
      * Method, which is called when are all advertisements found in file
      */
-    private void processingDone(java.util.List<VideoSection> results)
+    private void processingDone(java.util.List<VideoSection> videoResults)
     {
         //save results
-        videoSections = results;
-
+        videoSections = videoResults;
+        
         //change results
         prepareResultsForShowing();
 
