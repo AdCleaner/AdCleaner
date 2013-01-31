@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class VideoSection implements Comparable<VideoSection> {
 
-	private final Long start;
-	private final Long end;
+	private Long start;
+	private Long end;
 	private final TimeUnit timeuUnit;
 
 	public VideoSection(Long start, Long end) {
@@ -17,6 +17,11 @@ public final class VideoSection implements Comparable<VideoSection> {
 		this.end = Math.max(start, end);
 		this.timeuUnit = timeuUnit;
 	}
+        
+        public void setTime(Long startTime, Long endTime) {
+            start = startTime;
+            end = endTime;
+        }
         
 	public long getStart() {
 		return start;

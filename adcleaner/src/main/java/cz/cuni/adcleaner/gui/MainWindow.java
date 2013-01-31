@@ -13,6 +13,7 @@ import cz.cuni.adcleaner.IMediator;
 import cz.cuni.adcleaner.IWindow;
 import cz.cuni.adcleaner.VideoFileFilter;
 import cz.cuni.adcleaner.VideoSection;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Runs application where you can choose file
@@ -387,7 +388,7 @@ public class MainWindow implements ActionListener, IWindow
 
         for(VideoSectionPanel panel : results)
         {
-            text.append(String.format("%s.%s", panel.message(), newline));
+            text.append(String.format("%s%s", panel.message(), newline));
         }
 
         //remove VideoSectionPanels for listing
