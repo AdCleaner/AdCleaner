@@ -37,6 +37,7 @@ public class MainWindow implements ActionListener, IWindow
     private JPanel resultBox;
     private JPanel mainWindow;
     private JFrame frame;
+    private final double MAX_HEIGHT = 600.0;
 
     @Override
     public void registerMediator(IMediator mediator) {
@@ -336,6 +337,15 @@ public class MainWindow implements ActionListener, IWindow
         if (selectedFile != null) //file contains existing file
         {
             mediator.startVideoProcessing(selectedFile.getAbsolutePath());
+            //DEBUG START
+            /*processingDone(new LinkedList<VideoSection>() {{
+                add(new VideoSection(45L, 120L, TimeUnit.SECONDS));
+                add(new VideoSection(200L, 250L, TimeUnit.SECONDS));
+                add(new VideoSection(300L, 500L, TimeUnit.SECONDS));
+                add(new VideoSection(555L, 556L, TimeUnit.SECONDS));
+                add(new VideoSection(600L, 666L, TimeUnit.SECONDS));
+                }});*/
+            //DEBUG STOP
         }
 
         if (!URL.equals("")) //URL contains http://
@@ -375,6 +385,11 @@ public class MainWindow implements ActionListener, IWindow
      */
     private void cutButtonAction()
     {
+        //validation
+        if (!validCutTimes())
+        {
+            return;
+        }
         this.setStatePrepared();
         //TODO maybe enabled Stop button if processing takes too long
 
@@ -402,6 +417,24 @@ public class MainWindow implements ActionListener, IWindow
         //revalidate, repaint and remove result lines
         showTimes();
     }
+    
+    private boolean validCutTimes()
+    {
+        for(VideoSectionPanel panel : results)
+        {
+            if (!panel.validateTimes())
+            {
+                //warning window
+                JOptionPane.showMessageDialog(frame,
+                    panel.errorMessage(),
+                    "Warning - wrong time format",
+                    JOptionPane.WARNING_MESSAGE);
+                return false;
+            }
+        }
+        
+        return true;
+    }
 
     /**
      * Method to displays results in bottom of window.
@@ -423,6 +456,12 @@ public class MainWindow implements ActionListener, IWindow
         
         //sets size of window and repaints it
         frame.pack();
+        Dimension d = frame.getSize();
+        if (d.getHeight() > MAX_HEIGHT)
+        {
+            d.setSize(d.getWidth() + 15, MAX_HEIGHT);
+            frame.setSize(d);
+        }
         resultBox.invalidate();
 
         //make them visible
