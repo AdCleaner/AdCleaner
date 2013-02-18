@@ -2,7 +2,7 @@ package cz.cuni.adcleaner.gui;
 
 import javax.swing.*;
 
-import cz.cuni.adcleaner.VideoSection;
+import cz.cuni.adcleaner.ads.VideoSection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -170,6 +170,8 @@ public class VideoSectionPanel extends JPanel {
 
     private boolean validateClassicTime(String timeString)
     {
+        timeString = timeString.toLowerCase();
+
         //format
         if (!timeString.matches("\\d{2}:\\d{2}:\\d{2}:\\d{3}"))
         {
@@ -195,6 +197,8 @@ public class VideoSectionPanel extends JPanel {
 
     private boolean validateShortTime(String timeString)
     {
+        timeString = timeString.toLowerCase();
+
         //format
         if (!timeString.matches("(\\d+h)? ?(\\d+m)? ?(\\d+s)? ?(\\d+ms)?"))
         {
@@ -215,30 +219,30 @@ public class VideoSectionPanel extends JPanel {
 
     private boolean validateValue(String value)
     {
+        value = value.toLowerCase();
+
         if (value.lastIndexOf("ms") != -1)
         {
             if (Integer.parseInt(value.replaceAll("ms", "")) > 999)
             {
                 return false;
             }
-            //so it cannot matched to "s" or "m"
-            return true;
         }
-        if (value.lastIndexOf("s") != -1)
+        else if (value.lastIndexOf("s") != -1)
         {
             if (Integer.parseInt(value.replaceAll("s", "")) > 59)
             {
                 return false;
             }
         }
-        if (value.lastIndexOf("m") != -1)
+        else if (value.lastIndexOf("m") != -1)
         {
             if (Integer.parseInt(value.replaceAll("m", "")) > 59)
             {
                 return false;
             }
         }
-        if (value.lastIndexOf("h") != -1)
+        else if (value.lastIndexOf("h") != -1)
         {
             if (Integer.parseInt(value.replaceAll("h", "")) > 1)
             {

@@ -2,10 +2,7 @@ package cz.cuni.adcleaner;
 
 import javax.swing.*;
 
-import cz.cuni.adcleaner.audio.TestAudio;
-import cz.cuni.adcleaner.descriptors.CaptureScreenToFile;
-import cz.cuni.adcleaner.descriptors.CaptureVideoFrame;
-import cz.cuni.adcleaner.descriptors.DescriptorsTest;
+import cz.cuni.adcleaner.ads.AdFinder;
 import cz.cuni.adcleaner.gui.MainWindow;
 
 /**
@@ -24,36 +21,15 @@ public class Main {
     {
         try
         {
-            IMediator mediator = new Mediator();
-            final MainWindow window = new MainWindow();
-            IAdFinder adFinder = new AdFinder();
-
-            mediator.registerWindow(window);
-            mediator.registerAdFinder(adFinder);
-
-            ///*
-            // Show MainWindow
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    //Turn off metal's use of bold fonts
-                    UIManager.put("swing.boldMetal", Boolean.FALSE);
-                    window.createAndShowGUI();
-                }
-            });
-            //*/
+            showGUI();
 
             //DescriptorsTest.run();
 
-            /*
-            CaptureScreenToFile.run(args);
+            //CaptureScreenToFile.run(args);
 
+            //CaptureVideoFrame.run();
 
-
-            CaptureVideoFrame.run();
-
-            TestAudio.run(args);
-            */
+            //TestAudio.run(args);
 
         }
         catch (Exception ex)
@@ -62,5 +38,25 @@ public class Main {
             System.out.println("Stack trace:\n");
             ex.printStackTrace();
         }
+    }
+
+    private static void showGUI() {
+        IMediator mediator = new Mediator();
+        final MainWindow window = new MainWindow();
+        IAdFinder adFinder = new AdFinder();
+
+        mediator.registerWindow(window);
+        mediator.registerAdFinder(adFinder);
+
+        ///*
+        // Show MainWindow
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                //Turn off metal's use of bold fonts
+                UIManager.put("swing.boldMetal", Boolean.FALSE);
+                window.createAndShowGUI();
+            }
+        });
     }
 }

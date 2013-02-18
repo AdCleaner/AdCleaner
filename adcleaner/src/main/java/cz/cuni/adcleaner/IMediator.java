@@ -1,8 +1,8 @@
 package cz.cuni.adcleaner;
 
-import java.awt.event.ItemListener;
-import java.io.File;
 import java.util.List;
+
+import cz.cuni.adcleaner.ads.VideoSection;
 
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)

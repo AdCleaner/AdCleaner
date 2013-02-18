@@ -7,7 +7,8 @@ import java.util.List;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.IAudioSamplesEvent;
 
-import cz.cuni.adcleaner.VideoSection;
+import cz.cuni.adcleaner.MediaToolApplier;
+import cz.cuni.adcleaner.ads.VideoSection;
 
 public class VolumeRandomizer {
 

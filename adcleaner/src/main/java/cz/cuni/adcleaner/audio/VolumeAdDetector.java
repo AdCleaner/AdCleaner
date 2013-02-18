@@ -3,8 +3,9 @@ package cz.cuni.adcleaner.audio;
 import java.io.File;
 import java.util.List;
 
-import cz.cuni.adcleaner.VideoSection;
-import cz.cuni.adcleaner.descriptors.ScreenShotsManager;
+import cz.cuni.adcleaner.MediaToolApplier;
+import cz.cuni.adcleaner.ads.VideoSection;
+import cz.cuni.adcleaner.images.ScreenShotsManager;
 
 
 public class VolumeAdDetector {

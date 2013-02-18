@@ -5,15 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.*;
-import java.util.List;
 
 import javax.swing.*;
 
 import cz.cuni.adcleaner.IMediator;
 import cz.cuni.adcleaner.IWindow;
-import cz.cuni.adcleaner.VideoFileFilter;
-import cz.cuni.adcleaner.VideoSection;
-import java.util.concurrent.TimeUnit;
+import cz.cuni.adcleaner.ads.VideoSection;
 
 /**
  * Runs application where you can choose file
@@ -26,7 +23,7 @@ public class MainWindow implements ActionListener, IWindow
     static private final String newline = "\n";
     private String URL = "";
     private File file;
-    java.util.List<VideoSection> videoSections;
+    private java.util.List<VideoSection> videoSections;
     private ArrayList<VideoSectionPanel> results = new ArrayList<>();
 
     private JLabel label;
@@ -337,15 +334,7 @@ public class MainWindow implements ActionListener, IWindow
         if (selectedFile != null) //file contains existing file
         {
             mediator.startVideoProcessing(selectedFile.getAbsolutePath());
-            //DEBUG START
-            /*processingDone(new LinkedList<VideoSection>() {{
-                add(new VideoSection(45L, 120L, TimeUnit.SECONDS));
-                add(new VideoSection(200L, 250L, TimeUnit.SECONDS));
-                add(new VideoSection(300L, 500L, TimeUnit.SECONDS));
-                add(new VideoSection(555L, 556L, TimeUnit.SECONDS));
-                add(new VideoSection(600L, 666L, TimeUnit.SECONDS));
-                }});*/
-            //DEBUG STOP
+            return;
         }
 
         if (!URL.equals("")) //URL contains http://
@@ -374,7 +363,7 @@ public class MainWindow implements ActionListener, IWindow
         //remove buttons
         if (!results.isEmpty())
         {
-            text.append(String.format("Removing buttons.%s", newline));
+            text.append(String.format("Removing results.%s", newline));
             results.clear();
             showTimes();
         }

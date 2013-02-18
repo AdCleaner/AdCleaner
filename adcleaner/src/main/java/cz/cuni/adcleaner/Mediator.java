@@ -1,13 +1,8 @@
 package cz.cuni.adcleaner;
 
-import java.io.File;
-import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.*;
-
-import cz.cuni.adcleaner.descriptors.*;
-import cz.cuni.adcleaner.gui.MainWindow;
+import cz.cuni.adcleaner.ads.VideoSection;
 
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)

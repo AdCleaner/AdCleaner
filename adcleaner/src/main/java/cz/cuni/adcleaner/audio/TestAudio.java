@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import cz.cuni.adcleaner.VideoSection;
+import cz.cuni.adcleaner.ads.VideoSection;
 
 public class TestAudio {
 
@@ -23,9 +23,10 @@ public class TestAudio {
 		for (VideoSection videoSection : louderSections) {
 			System.out.println("Start: " + videoSection.getStart() + " End:" + videoSection.getEnd());
 		}
+
 		// Vykreslim grafy
-		new AmplitudeGraph(videoOut).show();
-		new AmplitudeMaxesGraph(videoOut, 5).show();
+		//new AmplitudeGraph(videoOut).show();
+		//new AmplitudeMaxesGraph(videoOut, 5).show();
 		
 		// Detekcia hlasnejsich casti
 		VolumeAdDetector volumeAdDetector = new VolumeAdDetector(videoOut);

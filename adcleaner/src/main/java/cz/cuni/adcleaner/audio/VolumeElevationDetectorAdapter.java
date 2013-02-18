@@ -13,8 +13,8 @@ import com.xuggle.mediatool.event.IOpenEvent;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IAudioSamples.Format;
 
-import cz.cuni.adcleaner.VideoSection;
-import cz.cuni.adcleaner.descriptors.ScreenShotsManager;
+import cz.cuni.adcleaner.ads.VideoSection;
+import cz.cuni.adcleaner.images.ScreenShotsManager;
 
 public class VolumeElevationDetectorAdapter extends MediaToolAdapter {
 
