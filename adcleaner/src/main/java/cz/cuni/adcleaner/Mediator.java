@@ -1,0 +1,60 @@
+package cz.cuni.adcleaner;
+
+import java.io.File;
+import java.util.List;
+
+import cz.cuni.adcleaner.ads.VideoSection;
+
+/**
+ * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
+ */
+public class Mediator implements IMediator {
+    private IWindow window;
+    private IAdFinder adFinder;
+
+    public void registerWindow(IWindow window)
+    {
+        this.window = window;
+        this.window.registerMediator(this);
+    }
+
+    public void registerAdFinder(IAdFinder adFinder)
+    {
+        this.adFinder = adFinder;
+        this.adFinder.registerMediator(this);
+    }
+
+    @Override
+    public boolean startVideoProcessing(File videoFile) {
+        if (this.window == null || this.adFinder == null)
+            return false;
+
+        return this.adFinder.startVideoProcessing(videoFile);
+    }
+
+    @Override
+    public boolean stopProcessing() {
+        return this.adFinder.stopVideoProcessing();
+    }
+
+    @Override
+    public void publishResults(List<VideoSection> videoSections) {
+        this.window.processResults(videoSections);
+    }
+
+    @Override
+    public void reportProgress(int progress) {
+        this.window.setProgress(progress);
+    }
+
+    @Override
+    public void cutAdsFromVideo(List<VideoSection> videoSections) {
+        //TODO: Peter Z. created output generator
+    }
+
+    @Override
+    public void cuttingAdsFromVideoFinished() {
+        window.cuttingAdsFromVideoFinished();
+    }
+
+}
