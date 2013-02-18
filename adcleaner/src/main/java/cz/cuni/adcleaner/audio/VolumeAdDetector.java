@@ -76,8 +76,9 @@ public class VolumeAdDetector {
             callibrationIntervalLength,
             new ScreenShotsManager(video.getName())
         );
-        new MediaToolApplier(video).apply(mediaTool);
-
+        MediaToolApplier mediaToolApplier = new MediaToolApplier(video);
+		mediaToolApplier.apply(mediaTool);
+		mediaToolApplier.run();
         return mediaTool.getLouderSections();
     }
 }
