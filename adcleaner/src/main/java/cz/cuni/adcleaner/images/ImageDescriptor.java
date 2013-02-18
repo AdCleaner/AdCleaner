@@ -9,6 +9,9 @@ import java.util.List;
 import cz.cuni.adcleaner.images.samples.ImageProcessorFactory;
 
 /**
+ * Wraps FeatureDescriptor and its similarity treshold.
+ * The treshold is used when comparing two feature vectors to decide about image similarity.
+ *
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public class ImageDescriptor {
@@ -21,6 +24,12 @@ public class ImageDescriptor {
         this.treshold = treshold;
     }
 
+    /**
+     * Runs descriptor for given image.
+     *
+     * @param image Image to desribe
+     * @return Returns feature vector.
+     */
     public List<double[]> run(File image) {
         if (!image.exists())
             return new LinkedList<double[]>();

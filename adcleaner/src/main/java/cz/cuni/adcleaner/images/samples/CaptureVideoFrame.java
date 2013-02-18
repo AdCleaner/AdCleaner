@@ -2,17 +2,11 @@ package cz.cuni.adcleaner.images.samples;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.mediatool.event.IVideoPictureEvent;
-import com.xuggle.xuggler.Global;
 
-import cz.cuni.adcleaner.images.ImageSnapListener;
+import cz.cuni.adcleaner.images.ImageSnapAdapter;
 import cz.cuni.adcleaner.images.ScreenShotsManager;
 
 
@@ -30,7 +24,7 @@ public class CaptureVideoFrame {
         mediaReader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 
         ScreenShotsManager manager = new ScreenShotsManager(new File(inputFilename).getName());
-        mediaReader.addListener(new ImageSnapListener(manager));
+        mediaReader.addListener(new ImageSnapAdapter(manager));
         // read out the contents of the media file and
         // dispatch events to the attached listener
         while (mediaReader.readPacket() == null) ;

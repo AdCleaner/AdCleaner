@@ -1,5 +1,6 @@
 package cz.cuni.adcleaner;
 
+import java.io.File;
 import java.util.List;
 
 import cz.cuni.adcleaner.ads.VideoSection;
@@ -24,11 +25,11 @@ public class Mediator implements IMediator {
     }
 
     @Override
-    public boolean startVideoProcessing(String videoFilePath) {
+    public boolean startVideoProcessing(File videoFile) {
         if (this.window == null || this.adFinder == null)
             return false;
 
-        return this.adFinder.startVideoProcessing(videoFilePath);
+        return this.adFinder.startVideoProcessing(videoFile);
     }
 
     @Override
@@ -40,4 +41,20 @@ public class Mediator implements IMediator {
     public void publishResults(List<VideoSection> videoSections) {
         this.window.processResults(videoSections);
     }
+
+    @Override
+    public void reportProgress(int progress) {
+        this.window.setProgress(progress);
+    }
+
+    @Override
+    public void cutAdsFromVideo(List<VideoSection> videoSections) {
+        //TODO: Peter Z. created output generator
+    }
+
+    @Override
+    public void cuttingAdsFromVideoFinished() {
+        window.cuttingAdsFromVideoFinished();
+    }
+
 }

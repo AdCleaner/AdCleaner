@@ -12,7 +12,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-import cz.cuni.adcleaner.video.VideoUtils;
+import cz.cuni.adcleaner.utilities.LineChartFrame;
+import cz.cuni.adcleaner.utilities.VideoUtils;
 
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
@@ -24,17 +25,16 @@ public class AmplitudeMaxesGraphAdapter extends MediaToolAdapter {
     /**
      * Granularity in seconds
      *
-     * @param video
+     * @param videoLength
      */
-    public AmplitudeMaxesGraphAdapter(File video) {
-        this(video, 5);
+    public AmplitudeMaxesGraphAdapter(long videoLength) {
+        this(videoLength, 5);
     }
 
-    protected AmplitudeMaxesGraphAdapter(File video, int granularity) {
+    protected AmplitudeMaxesGraphAdapter(long videoLength, int granularity) {
         this.granularity = granularity;
 
-        long videoDuration = VideoUtils.getVideoDuration(video) / 1000_000; // seconds
-        int intervals = (int) videoDuration / granularity + 1;
+        int intervals = (int) videoLength / granularity + 1;
 
         this.maxes = new ArrayList<>(intervals);
         for (int i = 0; i < intervals; i++) {
@@ -62,7 +62,8 @@ public class AmplitudeMaxesGraphAdapter extends MediaToolAdapter {
                 series .add(new XYDataItem((Number) (i * granularity), (Number) maxes.get(i)));
         }
 
-        LineChartFrame frame = new LineChartFrame("Amplitude Maxes", "Time", "Amplitude Maxes", series);
+        LineChartFrame
+            frame = new LineChartFrame("Amplitude Maxes", "Time", "Amplitude Maxes", series);
         frame.pack();
         RefineryUtilities.centerFrameOnScreen(frame);
         frame.setVisible(true);

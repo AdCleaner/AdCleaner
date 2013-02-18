@@ -7,6 +7,7 @@ public class VideoSection implements Comparable<VideoSection> {
 	private Long start;
 	private Long end;
 	private TimeUnit timeUnit;
+        private boolean cut;
 
 	public VideoSection(Long start, Long end) {
 		this(start, end, TimeUnit.MILLISECONDS);
@@ -42,6 +43,14 @@ public class VideoSection implements Comparable<VideoSection> {
 	public boolean isInSection(long time) {
 		return start <= time && time <= end;
 	}
+
+        public void setCut(boolean cut) {
+            this.cut = cut;
+        }
+
+        public boolean getCut() {
+            return this.cut;
+        }
 
 	@Override
 	public int compareTo(VideoSection o) {

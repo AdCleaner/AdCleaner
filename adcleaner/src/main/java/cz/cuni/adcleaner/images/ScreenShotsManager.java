@@ -10,11 +10,13 @@ import javax.imageio.ImageIO;
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public class ScreenShotsManager {
-
+    // Directory for screens
     private final String outputDirectory = "~/.adcelaner/screens";
 
+    // Distinct file prefix based on processed video file
     private String filePrefix;
 
+    // Generated screenshots
     private LinkedList<ScreenShot> screenshots = new LinkedList<ScreenShot>();
 
     private ImageSimilarityComparer comparer = new ImageSimilarityComparer();

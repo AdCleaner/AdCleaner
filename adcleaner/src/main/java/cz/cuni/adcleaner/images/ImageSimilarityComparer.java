@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Compares two images for similarity. Uses 6 descriptors to decide about image similarity.
+ *
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */
 public class ImageSimilarityComparer {
@@ -66,13 +68,20 @@ public class ImageSimilarityComparer {
         return similarityHits > 4;
     }
 
-    private static double euklidSimilarity(List<double[]> featuresCac1,
-                                                    List<double[]> featuresCac2) {
+    /**
+     * Computes euklid distance of two feature vectors. The distance is commutative.
+     * When dimensions of vectors don't match, the missing values are supplied with 0s.
+     *
+     * @param vector1 First feature vector.
+     * @param vector2 Second feature vector
+     * @return Return euklid distance of supplied vectors
+     */
+    private static double euklidSimilarity(List<double[]> vector1, List<double[]> vector2) {
         double diff = 0;
-        int listSize = Math.max(featuresCac1.size(), featuresCac2.size());
+        int listSize = Math.max(vector1.size(), vector2.size());
         for (int i = 0; i < listSize; ++i) {
-            double[] ds1 = featuresCac1.size() <= i ? new double[0] : featuresCac1.get(i);
-            double[] ds2 = featuresCac2.size() <= i ? new double[0] : featuresCac2.get(i);
+            double[] ds1 = vector1.size() <= i ? new double[0] : vector1.get(i);
+            double[] ds2 = vector2.size() <= i ? new double[0] : vector2.get(i);
 
             int arrayLength = Math.max(ds1.length, ds2.length);
             for (int j = 0; j < arrayLength; ++j) {
@@ -86,6 +95,10 @@ public class ImageSimilarityComparer {
         return Math.sqrt(diff);
     }
 
+    /**
+     * List of all vectors to describe images
+     * @return List of all vectors to describe images
+     */
     public List<ImageDescriptor> getAllDescriptors() {
         return new ArrayList<ImageDescriptor>() {
             {

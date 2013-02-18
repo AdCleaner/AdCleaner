@@ -3,12 +3,15 @@ package cz.cuni.adcleaner.gui;
 import javax.swing.*;
 
 import cz.cuni.adcleaner.ads.VideoSection;
+
+import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
 /**
  * GUI wrapper for PossibleAd class
  */
 public class VideoSectionPanel extends JPanel {
+    private final int MAX_HOURS = 10;
     private VideoSection videoSection;
     private JLabel labelStart, labelEnd;
     private JTextField textStart, textEnd;
@@ -90,11 +93,9 @@ public class VideoSectionPanel extends JPanel {
     /**
      * Make different log messages, depending on some settings
      * 
-     * @return string message about proccessing video section
+     * @return string message about processing video section
      */
-    public String message()
-    {
-        setInfoFromGUI();
+    public String getInfo() {
         String result = "";
 
         if (toCut)
@@ -102,7 +103,7 @@ public class VideoSectionPanel extends JPanel {
             result += startTimeToString();
             result += " - ";
             result += endTimeToString();
-            result += " - this secion will be in result.";
+            result += " - this section will be in result.";
         }
         else
         {
@@ -120,7 +121,7 @@ public class VideoSectionPanel extends JPanel {
      * Checks the start and end time format
      * 
      * @return true - valid
-     *         false - unvalid
+     *         false - invalid
      */
     public boolean validateTimes()
     {
@@ -129,18 +130,22 @@ public class VideoSectionPanel extends JPanel {
         {
             if (!validateClassicTime(textStart.getText()))
             {
-                errorMessage = "Start time: ";
-                errorMessage += textStart.getText();
-                errorMessage += " is in wrong format. Use: ";
-                errorMessage += "00:00:00:000 - 01:59:59:999 format.";
+                errorMessage = String.format(
+                    "Start time: %s is in wrong format. Insert value between: 00:00:00:000 - %s:59:59:999 format.",
+                    textStart.getText(),
+                    twoDigitString(MAX_HOURS - 1));
+
+                textStart.setBackground(Color.RED);
                 return false;
             }
             if (!validateClassicTime(textEnd.getText()))
             {
-                errorMessage = "End time: ";
-                errorMessage += textEnd.getText();
-                errorMessage += " is in wrong format. Use: ";
-                errorMessage += "00:00:00:000 - 01:59:59:999 format.";
+                errorMessage = String.format(
+                    "End time: %s is in wrong format. Insert value between: 00:00:00:000 - %s:59:59:999 format.",
+                    textEnd.getText(),
+                    twoDigitString(MAX_HOURS - 1));
+
+                textEnd.setBackground(Color.RED);
                 return false;
             }
         }
@@ -148,24 +153,38 @@ public class VideoSectionPanel extends JPanel {
         {
             if (!validateShortTime(textStart.getText()))
             {
-                errorMessage = "Start time: ";
-                errorMessage += textStart.getText();
-                errorMessage += " is in wrong format. Use: ";
-                errorMessage += "\"(0h) (0m) (0s) (0ms)\" - ";
-                errorMessage += "\"(1h) (59m) (59s) (999ms)\" format.";
+                errorMessage = String.format(
+                    "Start time: %s is in wrong format. Insert value between: (0h) (0m) (0s) (0ms) - (%sh) (59m) (59s) (999ms) format.",
+                    textStart.getText(),
+                    MAX_HOURS - 1);
+
+                textStart.setBackground(Color.RED);
                 return false;
             }
             if (!validateShortTime(textEnd.getText()))
             {
-                errorMessage = "End time: ";
-                errorMessage += textEnd.getText();
-                errorMessage += " is in wrong format. Use: ";
-                errorMessage += "\"(0h) (0m) (0s) (0ms)\" - ";
-                errorMessage += "\"(1h) (59m) (59s) (999ms)\" format.";
+                errorMessage = String.format(
+                    "End time: %s is in wrong format. Insert value between: (0h) (0m) (0s) (0ms) - (%sh) (59m) (59s) (999ms) format.",
+                    textEnd.getText(),
+                    MAX_HOURS - 1);
+
+                textEnd.setBackground(Color.RED);
                 return false;
             }
         }
+
+        textStart.setBackground(Color.GREEN);
+        textEnd.setBackground(Color.GREEN);
+
+        setInfoFromGUI();
         return true;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.textStart.setEnabled(enabled);
+        this.textEnd.setEnabled(enabled);
+        this.cutFromVideo.setEnabled(enabled);
     }
 
     private boolean validateClassicTime(String timeString)
@@ -179,7 +198,7 @@ public class VideoSectionPanel extends JPanel {
         }
         //data
         String[] time = timeString.split(timeDelimiter);
-        if (Integer.parseInt(time[0]) > 1) //HOURS
+        if (Integer.parseInt(time[0]) >= MAX_HOURS) //HOURS
         {
             return false;
         }
@@ -197,17 +216,23 @@ public class VideoSectionPanel extends JPanel {
 
     private boolean validateShortTime(String timeString)
     {
-        timeString = timeString.toLowerCase();
+        // Add space to the end to ensure proper matching
+        timeString = timeString.toLowerCase() + " ";
 
-        //format
-        if (!timeString.matches("(\\d+h)? ?(\\d+m)? ?(\\d+s)? ?(\\d+ms)?"))
+        // Assert format
+        if (!timeString.matches("(\\d+h )?(\\d+m )?(\\d+s )?(\\d+ms )?"))
         {
             return false;
         }
-        //data
+
+        // Validate times
         String[] time = timeString.split(" ");
         for (int i = 0; i < time.length; ++i)
         {
+            // The added space
+            if (time[i].length() == 0)
+                continue;
+
             if (!validateValue(time[i]))
             {
                 return false;
@@ -244,7 +269,7 @@ public class VideoSectionPanel extends JPanel {
         }
         else if (value.lastIndexOf("h") != -1)
         {
-            if (Integer.parseInt(value.replaceAll("h", "")) > 1)
+            if (Integer.parseInt(value.replaceAll("h", "")) >= MAX_HOURS)
             {
                 return false;
             }
@@ -263,9 +288,7 @@ public class VideoSectionPanel extends JPanel {
         long end = parseTime(textEnd.getText());
         
         videoSection.setTime(start, end);
-
-        //not working right now...
-        toCut = cutFromVideo.isSelected();
+        videoSection.setCut(cutFromVideo.isSelected());
     }
     
     private long parseTime(String timeString)
@@ -274,7 +297,7 @@ public class VideoSectionPanel extends JPanel {
         if (classicTime)
         {
             String[] time = timeString.split(timeDelimiter);
-            //HOUR, MINUTE, SECOND, MILISECOND
+            //HOUR, MINUTE, SECOND, MILLISECOND
             result = Integer.parseInt(time[0]);
             result *= 60; //now in minutes
             result += Integer.parseInt(time[1]);
@@ -282,7 +305,7 @@ public class VideoSectionPanel extends JPanel {
             result += Integer.parseInt(time[2]);
             if (videoSection.getTimeUnit() == TimeUnit.MILLISECONDS)
             {
-                result *= 1000; // now in miliseconds
+                result *= 1000; // now in milliseconds
                 result += Integer.parseInt(time[3]);
             }
         }
@@ -302,10 +325,10 @@ public class VideoSectionPanel extends JPanel {
     }
 
     /**
-     * Takes string and converts it into long (miliseconds from time units)
+     * Takes string and converts it into long (milliseconds from time units)
      * 
      * @param value - String with format: "5h" or "04m" or "666ms"
-     * @return long - time in miliseconds
+     * @return long - time in milliseconds
      */
     private long parseValue(String value)
     {
@@ -331,7 +354,7 @@ public class VideoSectionPanel extends JPanel {
     /**
      * Get starting time of video section from VideoSection
      * 
-     * @return time is in string format hour:minute:second:milisecond
+     * @return time is in string format hour:minute:second:millisecond
      */
     private String startTimeToString()
     {
@@ -340,7 +363,7 @@ public class VideoSectionPanel extends JPanel {
         {
             start *= 1000;
         }
-        int milisecond = (int) (start % 1000);
+        int millisecond = (int) (start % 1000);
         start /= 1000;
         int second = (int) (start % 60);
         start /= 60;
@@ -348,13 +371,13 @@ public class VideoSectionPanel extends JPanel {
         start /= 60;
         int hour = (int) start;
 
-        return timeToString(hour, minute, second, milisecond);
+        return timeToString(hour, minute, second, millisecond);
     }
     
     /**
      * Get ending time of video section from VideoSection
      * 
-     * @return time is in string format hour:minute:second:milisecond
+     * @return time is in string format hour:minute:second:millisecond
      */
     private String endTimeToString()
     {
@@ -363,7 +386,7 @@ public class VideoSectionPanel extends JPanel {
         {
             end *= 1000;
         }
-        int milisecond = (int) (end % 1000);
+        int millisecond = (int) (end % 1000);
         end /= 1000;
         int second = (int) (end % 60);
         end /= 60;
@@ -371,10 +394,10 @@ public class VideoSectionPanel extends JPanel {
         end /= 60;
         int hour = (int) end;
 
-        return timeToString(hour, minute, second, milisecond);
+        return timeToString(hour, minute, second, millisecond);
     }
     
-    private String timeToString(int hour, int minute, int second, int milisecond)
+    private String timeToString(int hour, int minute, int second, int millisecond)
     {
         String result = "";
         
@@ -386,7 +409,7 @@ public class VideoSectionPanel extends JPanel {
             result += timeDelimiter;
             result += twoDigitString(second);
             result += timeDelimiter;
-            result += threeDigitString(milisecond);
+            result += threeDigitString(millisecond);
         }
         else
         {
@@ -402,7 +425,7 @@ public class VideoSectionPanel extends JPanel {
             {
                 result += Integer.toString(second) + "s ";
             }
-            result += Integer.toString(milisecond) + "ms";
+            result += Integer.toString(millisecond) + "ms";
         }
         
         return result;

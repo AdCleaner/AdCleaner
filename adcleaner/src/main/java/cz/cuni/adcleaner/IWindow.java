@@ -11,4 +11,8 @@ public interface IWindow {
     void registerMediator(IMediator mediator);
 
     void processResults(List<VideoSection> videoSections);
+
+    void setProgress(int progress);
+
+    void cuttingAdsFromVideoFinished();
 }

@@ -8,6 +8,8 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.RefineryUtilities;
 
+import cz.cuni.adcleaner.utilities.LineChartFrame;
+
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
  */

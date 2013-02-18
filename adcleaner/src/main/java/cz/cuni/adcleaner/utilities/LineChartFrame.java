@@ -1,4 +1,4 @@
-package cz.cuni.adcleaner.audio;
+package cz.cuni.adcleaner.utilities;
 
 import java.awt.Color;
 
@@ -13,6 +13,8 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
+
+import javax.swing.*;
 
 public class LineChartFrame extends ApplicationFrame {
 
@@ -32,6 +34,8 @@ public class LineChartFrame extends ApplicationFrame {
 		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
 		setContentPane(chartPanel);
 
+                super.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+                super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 	}
 
 	private JFreeChart createChart(final XYDataset dataset) {
@@ -60,4 +64,11 @@ public class LineChartFrame extends ApplicationFrame {
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		return chart;
 	}
+
+    @Override
+    public void windowClosing(java.awt.event.WindowEvent event)
+    {
+        // Only close window, do not call System.exit(0) as parent does.
+        this.setVisible(false);
+    }
 }

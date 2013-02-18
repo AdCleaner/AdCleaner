@@ -1,4 +1,4 @@
-package cz.cuni.adcleaner.video;
+package cz.cuni.adcleaner.utilities;
 
 import java.io.File;
 

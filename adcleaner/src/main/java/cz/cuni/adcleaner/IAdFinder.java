@@ -1,5 +1,6 @@
 package cz.cuni.adcleaner;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +10,9 @@ import java.util.List;
 public interface IAdFinder {
     boolean stopVideoProcessing();
 
-    boolean startVideoProcessing(String videoFilePath);
+    boolean startVideoProcessing(File videoFile);
 
     void registerMediator(IMediator mediator);
+
+    void reportProgress(int progress);
 }

@@ -7,7 +7,7 @@ import com.xuggle.xuggler.Global;
 /**
 * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
 */
-public class ImageSnapListener extends MediaToolAdapter {
+public class ImageSnapAdapter extends MediaToolAdapter {
     // Create screenshot every 1 second
     private final double SECONDS_BETWEEN_FRAMES = 1;
 
@@ -23,7 +23,7 @@ public class ImageSnapListener extends MediaToolAdapter {
 
     private ScreenShotsManager manager;
 
-    public ImageSnapListener(ScreenShotsManager manager)
+    public ImageSnapAdapter(ScreenShotsManager manager)
     {
        this.manager = manager;
     }
@@ -50,8 +50,6 @@ public class ImageSnapListener extends MediaToolAdapter {
             long seconds = event.getTimeStamp() / Global.DEFAULT_PTS_PER_SECOND;
 
             manager.saveScreenshot(event.getImage(), seconds);
-
-            System.out.printf("at elapsed time of %s seconds.\n",seconds);
 
             // update last write time
             mLastPtsWrite += MICRO_SECONDS_BETWEEN_FRAMES;

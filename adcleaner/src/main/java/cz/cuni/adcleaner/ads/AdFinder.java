@@ -11,8 +11,10 @@ import cz.cuni.adcleaner.audio.AmplitudeGraphAdapter;
 import cz.cuni.adcleaner.audio.AmplitudeMaxesGraphAdapter;
 import cz.cuni.adcleaner.MediaToolApplier;
 import cz.cuni.adcleaner.audio.VolumeElevationDetectorAdapter;
-import cz.cuni.adcleaner.images.ImageSnapListener;
+import cz.cuni.adcleaner.images.ImageSnapAdapter;
 import cz.cuni.adcleaner.images.ScreenShotsManager;
+import cz.cuni.adcleaner.utilities.ProgressReportingAdapter;
+import cz.cuni.adcleaner.utilities.VideoUtils;
 
 /**
  * @author Ondřej Heřmánek (ondra.hermanek@gmail.com)
@@ -47,10 +49,12 @@ public class AdFinder implements IAdFinder {
     }
 
     @Override
-    public boolean startVideoProcessing(String videoFilePath) {
-        final File video = new File(videoFilePath);
-        if (!video.exists())
+    public boolean startVideoProcessing(File videoFile) {
+        if (!videoFile.exists())
             return false;
+
+        final File video = videoFile;
+        final AdFinder adFinder = this;
 
         processThread = new Thread(new Runnable() {
             @Override
@@ -60,6 +64,7 @@ public class AdFinder implements IAdFinder {
             int numberOfContinuousSections = 5;
             long calibrationIntervalLength = 20;
             double maxElevation = 1.2;
+            long videoLength = VideoUtils.getVideoDuration(video) / 1000000; // Seconds
 
             manager = new ScreenShotsManager(video.getName());
 
@@ -71,26 +76,34 @@ public class AdFinder implements IAdFinder {
                     calibrationIntervalLength,
                     manager);
 
+            ProgressReportingAdapter progresReporter = new ProgressReportingAdapter(adFinder, videoLength);
             AmplitudeGraphAdapter amplitudeGraphAdapter = new AmplitudeGraphAdapter();
             AmplitudeMaxesGraphAdapter amplitudeMaxesGraphAdapter
-                = new AmplitudeMaxesGraphAdapter(video);
+                = new AmplitudeMaxesGraphAdapter(videoLength);
 
             try
             {
+                // Create tool to browse the video file and register audio/video sample listeners
                 MediaToolApplier applier = new MediaToolApplier(video);
-                applier.apply(new ImageSnapListener(manager));
+                applier.apply(new ImageSnapAdapter(manager));
                 applier.apply(volumeAdapter);
                 applier.apply(amplitudeGraphAdapter);
                 applier.apply(amplitudeMaxesGraphAdapter);
+                applier.apply(progresReporter);
 
+                // Process the video
                 applier.run();
 
+                // Show amplitude graphs
                 System.out.println("Showing graphs...");
                 amplitudeGraphAdapter.show();
                 amplitudeMaxesGraphAdapter.show();
 
+                // Report results
                 System.out.println("publishing results...");
+                progresReporter.reportFinish();
                 mediator.publishResults(volumeAdapter.getLouderSections());
+                //TODO: debug mediator.publishResults(getProcessingResults());
                 System.out.println("Processing finished.");
             }
             catch (Exception ex)
@@ -113,6 +126,11 @@ public class AdFinder implements IAdFinder {
     @Override
     public void registerMediator(IMediator mediator) {
         this.mediator = mediator;
+    }
+
+    @Override
+    public void reportProgress(int progress) {
+        this.mediator.reportProgress(progress);
     }
 
     private void cleanUp()
