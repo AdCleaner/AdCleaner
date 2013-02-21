@@ -94,8 +94,8 @@ public class ScreenShotsManager {
             }
             else {
                 // Delete passed screenshot (won't be asking for it again)
-                //if(lastButOne != null)
-                    //lastButOne.deleteScreenshot();
+                if(lastButOne != null)
+                    lastButOne.deleteScreenshot();
 
                 lastButOne = last;
                 last = scr;
@@ -114,7 +114,7 @@ public class ScreenShotsManager {
     {
         for(ScreenShot screen : screenshots)
         {
-            //screen.deleteScreenshot();
+            screen.deleteScreenshot();
         }
     }
 
