@@ -133,7 +133,7 @@ public class MainWindow implements ActionListener, IWindow, WindowListener
         // Create and set up the window
         frame = new JFrame("AdCleaner");
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(600, 600));
+        frame.setMinimumSize(new Dimension(700, 600));
 
         // Add content to the window
         mainWindow.add(createWindowContent());
@@ -434,7 +434,7 @@ public class MainWindow implements ActionListener, IWindow, WindowListener
 
             text.append(String.format("Ads cutting stopped.%s", newline));
         }
-
+        text.append(String.format("--------------------------%s", newline));
     }
 
     /**
