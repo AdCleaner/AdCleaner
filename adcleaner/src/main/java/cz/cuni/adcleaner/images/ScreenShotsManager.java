@@ -112,6 +112,9 @@ public class ScreenShotsManager {
 
     public void cleanUp()
     {
+        if (screenshots == null || screenshots.size() == 0)
+            return;
+
         for(ScreenShot screen : screenshots)
         {
             screen.deleteScreenshot();
