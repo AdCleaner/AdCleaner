@@ -386,6 +386,10 @@ public class MainWindow implements ActionListener, IWindow
      */
     private void stopButtonAction() {
         text.append(String.format("Stopping current action.%s", newline));
+        // Remember the state before stopping
+        State state = currentState;
+
+        // Set to initial
         this.setStateInitial();
 
         //remove buttons
@@ -396,20 +400,24 @@ public class MainWindow implements ActionListener, IWindow
             showTimes();
         }
 
-        if (currentState == State.PROCESSING) {
+        if (state == State.PROCESSING) {
             if (!this.mediator.stopVideoProcessing())
             {
                 text.append(String.format("Failed to stop the processing.%s", newline));
                 return;
             }
+
+            text.append(String.format("Video processing stopped.%s", newline));
         }
 
-        if (currentState == State.FINISHING) {
+        if (state == State.FINISHING) {
             if (!this.mediator.stopCuttingAds())
             {
                 text.append(String.format("Failed to stop the ads cutting.%s", newline));
                 return;
             }
+
+            text.append(String.format("Ads cutting stopped.%s", newline));
         }
     }
 

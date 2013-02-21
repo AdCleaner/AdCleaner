@@ -114,7 +114,7 @@ public class ScreenShotsManager {
     {
         for(ScreenShot screen : screenshots)
         {
-            screen.deleteScreenshot();
+            //screen.deleteScreenshot();
         }
     }
 

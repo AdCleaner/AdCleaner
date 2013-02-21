@@ -35,6 +35,7 @@ public class AdFinder implements IAdFinder {
 
         // Didn't find any better way to kill the thread
         processThread.stop();
+
         return true;
     }
 

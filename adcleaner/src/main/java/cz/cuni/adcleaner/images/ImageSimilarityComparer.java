@@ -34,8 +34,8 @@ public class ImageSimilarityComparer {
      */
     public boolean areImagesSimilar(File image1, File image2) {
         if ( image1 == null || image2 == null ||
-             image1.getAbsolutePath() == image2.getAbsolutePath() ||
-             !image1.exists() || !image2.exists())
+             !image1.exists() || !image2.exists() ||
+             image1.getAbsolutePath().equals(image2.getAbsolutePath()))
             return false;
 
         // Descriptors have to be loaded before every use (can't be reused for another image)
