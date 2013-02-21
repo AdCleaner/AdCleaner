@@ -100,18 +100,17 @@ public class VideoSectionPanel extends JPanel {
 
         if (toCut)
         {
+            result += "This section will be muted: ";
             result += startTimeToString();
             result += " - ";
             result += endTimeToString();
-            result += " - this section will be in result.";
         }
         else
         {
-            result += "NOT IN RESULT - ";
+            result += "This section will not be muted: ";
             result += startTimeToString();
             result += " - ";
             result += endTimeToString();
-            result += " - NOT IN RESULT";
         }
 
         return result;
@@ -138,6 +137,9 @@ public class VideoSectionPanel extends JPanel {
                 textStart.setBackground(Color.RED);
                 return false;
             }
+            
+            textStart.setBackground(Color.GREEN);
+            
             if (!validateClassicTime(textEnd.getText()))
             {
                 errorMessage = String.format(
@@ -161,6 +163,9 @@ public class VideoSectionPanel extends JPanel {
                 textStart.setBackground(Color.RED);
                 return false;
             }
+            
+            textStart.setBackground(Color.GREEN);
+            
             if (!validateShortTime(textEnd.getText()))
             {
                 errorMessage = String.format(
@@ -173,7 +178,6 @@ public class VideoSectionPanel extends JPanel {
             }
         }
 
-        textStart.setBackground(Color.GREEN);
         textEnd.setBackground(Color.GREEN);
 
         setInfoFromGUI();
@@ -338,15 +342,15 @@ public class VideoSectionPanel extends JPanel {
         }
         if (value.lastIndexOf("s") != -1)
         {
-            return 1000*Integer.parseInt(value.replaceAll("s", ""));
+            return (1000 * Integer.parseInt(value.replaceAll("s", "")));
         }
         if (value.lastIndexOf("m") != -1)
         {
-            return 60*1000*Integer.parseInt(value.replaceAll("m", ""));
+            return (60 * 1000 * Integer.parseInt(value.replaceAll("m", "")));
         }
         if (value.lastIndexOf("h") != -1)
         {
-            return 60*60*1000*Integer.parseInt(value.replaceAll("h", ""));
+            return (60 * 60 * 1000 * Integer.parseInt(value.replaceAll("h", "")));
         }
         return 0;
     }
