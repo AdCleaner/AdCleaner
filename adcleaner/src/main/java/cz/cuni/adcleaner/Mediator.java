@@ -57,6 +57,8 @@ public class Mediator implements IMediator {
     @Override
     public boolean startCuttingAds(List<VideoSection> videoSections, File inputVideo) {
         this.adCutter = new AdCutter();
+        adCutter.registerMediator(this);
+
         return adCutter.startVideoCutting(videoSections, inputVideo);
     }
 

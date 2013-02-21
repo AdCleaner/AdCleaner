@@ -80,18 +80,26 @@ public class ScreenShotsManager {
         // Screenshots are create in ascending order of appearance (logical)
         // So we just need to browse the list and remember two last screenshots
         // until the screenshot mark is higher than requested
+        boolean skip = false;
         for(ScreenShot scr : screenshots)
         {
             // The "younger" screenshot found, quit searching
             if (scr.mark > seconds)
-                break;
+            {
+                if (skip)
+                    break;
 
-            // Delete passed screenshot (won't be asking for it again)
-            if(lastButOne != null)
-                lastButOne.deleteScreenshot();
+                skip = true;
+                last = scr;
+            }
+            else {
+                // Delete passed screenshot (won't be asking for it again)
+                //if(lastButOne != null)
+                    //lastButOne.deleteScreenshot();
 
-            lastButOne = last;
-            last = scr;
+                lastButOne = last;
+                last = scr;
+            }
         }
 
         // Not enough screens yet - definitely a shot boundary found
