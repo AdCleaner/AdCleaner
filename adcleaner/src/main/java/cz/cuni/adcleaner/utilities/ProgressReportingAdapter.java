@@ -3,6 +3,7 @@ package cz.cuni.adcleaner.utilities;
 import com.xuggle.mediatool.MediaToolAdapter;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 
+import cz.cuni.adcleaner.IMediator;
 import cz.cuni.adcleaner.ads.AdFinder;
 
 /**
@@ -15,12 +16,12 @@ public class ProgressReportingAdapter extends MediaToolAdapter {
     // Report every 1% of progress
     private int reportStep = 1;
 
-    private AdFinder adFinder;
+    private IMediator mediator;
     private long videoFileLength;
 
-    public ProgressReportingAdapter(AdFinder adFinder, long videoFileLength)
+    public ProgressReportingAdapter(IMediator mediator, long videoFileLength)
     {
-       this.adFinder = adFinder;
+       this.mediator = mediator;
        this.videoFileLength = videoFileLength;
     }
 
@@ -33,7 +34,7 @@ public class ProgressReportingAdapter extends MediaToolAdapter {
         int progress = (int)( ((double) timeStamp / (double) videoFileLength) * 100);
 
         if (progress == this.progressToReport) {
-            reportProgoress();
+            reportProgress();
             this.progressToReport += reportStep;
         }
     }
@@ -43,10 +44,10 @@ public class ProgressReportingAdapter extends MediaToolAdapter {
      */
     public void reportFinish() {
         this.progressToReport = 100;
-        reportProgoress();
+        reportProgress();
     }
 
-    private void reportProgoress() {
-        this.adFinder.reportProgress(this.progressToReport);
+    private void reportProgress() {
+        this.mediator.reportProgress(this.progressToReport);
     }
 }

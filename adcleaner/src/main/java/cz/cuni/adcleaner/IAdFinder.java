@@ -13,6 +13,4 @@ public interface IAdFinder {
     boolean startVideoProcessing(File videoFile);
 
     void registerMediator(IMediator mediator);
-
-    void reportProgress(int progress);
 }

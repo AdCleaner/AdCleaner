@@ -19,7 +19,7 @@ import cz.cuni.adcleaner.ads.VideoSection;
 public class MainWindow implements ActionListener, IWindow
 {
     private IMediator mediator;
-    private State ActiveState = State.INITIAL;
+    private State currentState = State.INITIAL;
     private final String newline = "\n";
     private final double MAX_HEIGHT = 600.0;
     private String url = "";
@@ -51,7 +51,29 @@ public class MainWindow implements ActionListener, IWindow
         progressBar.setValue(progress);
     }
 
-    public void cuttingAdsFromVideoFinished() {
+    @Override
+    public void processActionFailed(String reason) {
+        text.append(reason);
+        setStateInitial();
+    }
+
+    @Override
+    public void cuttingAdsFromVideoFinished(File outputFile) {
+        if (outputFile == null)
+        {
+            text.append(
+                String.format(
+                    "Unable to generate output video file: %s.%s",
+                    outputFile.getAbsolutePath(),
+                    newline));
+        }
+        else {
+            text.append(
+                String.format(
+                    "Output video generated: %s.%s",
+                    outputFile.getAbsolutePath(),
+                    newline));
+        }
 
         //remove VideoSectionPanels for listing
         results.clear();
@@ -85,7 +107,7 @@ public class MainWindow implements ActionListener, IWindow
         }
         else if ((e.getSource() == pathText))
         {
-            if (ActiveState != State.PROCESSING)
+            if (currentState != State.PROCESSING)
                 pathTextEnterPressed();
         }
         else if (e.getSource() == processButton)
@@ -123,7 +145,7 @@ public class MainWindow implements ActionListener, IWindow
     }
 
     private void setStateInitial() {
-        this.ActiveState = State.INITIAL;
+        this.currentState = State.INITIAL;
         openButton.setEnabled(true);
         processButton.setEnabled(false);
         stopButton.setEnabled(false);
@@ -131,10 +153,11 @@ public class MainWindow implements ActionListener, IWindow
 
         currentFile = null;
         pathText.setText("");
+        progressBar.setValue(0);
     }
 
     private void setStatePrepared() {
-        this.ActiveState = State.PREPARED;
+        this.currentState = State.PREPARED;
         openButton.setEnabled(true); //you can still choose another file
         processButton.setEnabled(true);
         stopButton.setEnabled(false);
@@ -144,21 +167,32 @@ public class MainWindow implements ActionListener, IWindow
     }
 
     private void setStateProcessing() {
-        this.ActiveState = State.PROCESSING;
+        this.currentState = State.PROCESSING;
         openButton.setEnabled(false);
         processButton.setEnabled(false);
         stopButton.setEnabled(true);
         cutButton.setEnabled(false);
         //Path is disabled in method: actionPerformed(ActionEvent e)
+
+        progressBar.setValue(0);
     }
 
-    private void setStateFinish() {
-        this.ActiveState = State.FINISH;
-        openButton.setEnabled(true);
+    private void setStateProcessed() {
+        this.currentState = State.PROCESSED;
         openButton.setEnabled(false);
         processButton.setEnabled(false);
         stopButton.setEnabled(false);
         cutButton.setEnabled(true);
+    }
+
+    private void setStateFinishing() {
+        this.currentState = State.FINISHING;
+        openButton.setEnabled(false);
+        processButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        cutButton.setEnabled(false);
+
+        progressBar.setValue(0);
     }
     
     /**
@@ -322,8 +356,6 @@ public class MainWindow implements ActionListener, IWindow
      * Action performed when start button is pressed
      */
     private void processButtonAction() {
-        this.setStateProcessing();
-
         if (currentFile != null) {
             if (!currentFile.exists()) {
                 text.append("Can't process not-existing file: " + currentFile.getAbsolutePath());
@@ -335,7 +367,9 @@ public class MainWindow implements ActionListener, IWindow
                 currentFile.getAbsolutePath(),
                 newline)
             );
+
             mediator.startVideoProcessing(currentFile);
+            this.setStateProcessing();
             return;
         }
 
@@ -343,7 +377,7 @@ public class MainWindow implements ActionListener, IWindow
         {
             //validation of URL is needed (also if URL exists)
             text.append(String.format("URL is not supported right now."));
-            this.setStateFinish();
+            this.setStateInitial();
         }
     }
 
@@ -351,12 +385,6 @@ public class MainWindow implements ActionListener, IWindow
      * Action performed when stop button is pressed
      */
     private void stopButtonAction() {
-        if (!this.mediator.stopProcessing())
-        {
-            text.append(String.format("Failed to stop the processing.%s", newline));
-            return;
-        }
-
         text.append(String.format("Stopping current action.%s", newline));
         this.setStateInitial();
 
@@ -366,6 +394,22 @@ public class MainWindow implements ActionListener, IWindow
             text.append(String.format("Removing results.%s", newline));
             results.clear();
             showTimes();
+        }
+
+        if (currentState == State.PROCESSING) {
+            if (!this.mediator.stopVideoProcessing())
+            {
+                text.append(String.format("Failed to stop the processing.%s", newline));
+                return;
+            }
+        }
+
+        if (currentState == State.FINISHING) {
+            if (!this.mediator.stopCuttingAds())
+            {
+                text.append(String.format("Failed to stop the ads cutting.%s", newline));
+                return;
+            }
         }
     }
 
@@ -396,7 +440,9 @@ public class MainWindow implements ActionListener, IWindow
             panel.setEnabled(false);
         }
 
-        mediator.cutAdsFromVideo(videoSections);
+        // Initialize progress and start generating output video
+        mediator.startCuttingAds(videoSections, currentFile);
+        setStateFinishing();
     }
     
     private boolean validateCutTimes()
@@ -405,7 +451,6 @@ public class MainWindow implements ActionListener, IWindow
         {
             if (!panel.validateTimes())
             {
-
                 //warning window
                 JOptionPane.showMessageDialog(frame,
                     panel.errorMessage(),
@@ -448,7 +493,7 @@ public class MainWindow implements ActionListener, IWindow
      * Function for transforming results into panels
      * VideoSection => VideoSectionPanel
      */
-    private void prepareResultsForShowing()
+    private void showResults()
     {
         //delete old data
         results.clear();
@@ -472,9 +517,9 @@ public class MainWindow implements ActionListener, IWindow
         videoSections = videoResults;
         
         //change results
-        prepareResultsForShowing();
+        showResults();
 
         //set state to done
-        setStateFinish();
+        setStateProcessed();
     }
 }
