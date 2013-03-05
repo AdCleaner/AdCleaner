@@ -102,10 +102,10 @@ public class ImageSimilarityComparer {
     public List<ImageDescriptor> getAllDescriptors() {
         return new ArrayList<ImageDescriptor>() {
             {
-                add(new ImageDescriptor(new CEDD(), 7.5));
-                add(new ImageDescriptor(new FCTH(), 5.0));
-                add(new ImageDescriptor(new FuzzyHistogram(), 250.0));
-                add(new ImageDescriptor(new JCD(), 7.5));
+                add(new ImageDescriptor(new CEDD(), 7.5)); //Color and Edge Directivity Descriptor
+                add(new ImageDescriptor(new FCTH(), 5.0)); //Fuzzy Color and Texture Histogram
+                add(new ImageDescriptor(new FuzzyHistogram(), 250.0)); //Fuzzy Color Histogram
+                add(new ImageDescriptor(new JCD(), 7.5));  //CEDD + FCTH
                 add(new ImageDescriptor(new SURF(), 3000.0));
                 add(new ImageDescriptor(new Tamura(), 100.0));
             }
