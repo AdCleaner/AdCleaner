@@ -34,8 +34,8 @@ public class ImageSimilarityComparer {
      */
     public boolean areImagesSimilar(File image1, File image2) {
         if ( image1 == null || image2 == null ||
-             image1.getAbsolutePath() == image2.getAbsolutePath() ||
-             !image1.exists() || !image2.exists())
+             !image1.exists() || !image2.exists() ||
+             image1.getAbsolutePath().equals(image2.getAbsolutePath()))
             return false;
 
         // Descriptors have to be loaded before every use (can't be reused for another image)
@@ -102,10 +102,10 @@ public class ImageSimilarityComparer {
     public List<ImageDescriptor> getAllDescriptors() {
         return new ArrayList<ImageDescriptor>() {
             {
-                add(new ImageDescriptor(new CEDD(), 7.5));
-                add(new ImageDescriptor(new FCTH(), 5.0));
-                add(new ImageDescriptor(new FuzzyHistogram(), 250.0));
-                add(new ImageDescriptor(new JCD(), 7.5));
+                add(new ImageDescriptor(new CEDD(), 7.5)); //Color and Edge Directivity Descriptor
+                add(new ImageDescriptor(new FCTH(), 5.0)); //Fuzzy Color and Texture Histogram
+                add(new ImageDescriptor(new FuzzyHistogram(), 250.0)); //Fuzzy Color Histogram
+                add(new ImageDescriptor(new JCD(), 7.5));  //CEDD + FCTH
                 add(new ImageDescriptor(new SURF(), 3000.0));
                 add(new ImageDescriptor(new Tamura(), 100.0));
             }

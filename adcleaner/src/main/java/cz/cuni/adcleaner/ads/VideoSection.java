@@ -60,6 +60,6 @@ public class VideoSection implements Comparable<VideoSection> {
 
 	@Override
 	public String toString() {
-		return "VideoSection [start=" + start + ", end=" + end + ", timeUnit=" + timeUnit + "]";
+		return "VideoSection [start=" + start + ", end=" + end + ", timeUnit=" + timeUnit.toString() + "]";
 	}
 }

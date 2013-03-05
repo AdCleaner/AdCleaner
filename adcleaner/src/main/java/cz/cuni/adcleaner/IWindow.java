@@ -1,5 +1,6 @@
 package cz.cuni.adcleaner;
 
+import java.io.File;
 import java.util.List;
 
 import cz.cuni.adcleaner.ads.VideoSection;
@@ -14,5 +15,7 @@ public interface IWindow {
 
     void setProgress(int progress);
 
-    void cuttingAdsFromVideoFinished();
+    void cuttingAdsFromVideoFinished(File outputFile);
+
+    void processActionFailed(String reason);
 }

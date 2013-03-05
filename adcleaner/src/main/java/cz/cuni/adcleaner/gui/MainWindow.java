@@ -11,15 +11,17 @@ import javax.swing.*;
 import cz.cuni.adcleaner.IMediator;
 import cz.cuni.adcleaner.IWindow;
 import cz.cuni.adcleaner.ads.VideoSection;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 /**
  * Runs application where you can choose file
  *
  */
-public class MainWindow implements ActionListener, IWindow
+public class MainWindow implements ActionListener, IWindow, WindowListener
 {
     private IMediator mediator;
-    private State ActiveState = State.INITIAL;
+    private State currentState = State.INITIAL;
     private final String newline = "\n";
     private final double MAX_HEIGHT = 600.0;
     private String url = "";
@@ -51,7 +53,29 @@ public class MainWindow implements ActionListener, IWindow
         progressBar.setValue(progress);
     }
 
-    public void cuttingAdsFromVideoFinished() {
+    @Override
+    public void processActionFailed(String reason) {
+        text.append(reason);
+        setStateInitial();
+    }
+
+    @Override
+    public void cuttingAdsFromVideoFinished(File outputFile) {
+        if (outputFile == null)
+        {
+            text.append(
+                String.format(
+                    "Unable to generate output video file: %s.%s",
+                    outputFile.getAbsolutePath(),
+                    newline));
+        }
+        else {
+            text.append(
+                String.format(
+                    "Output video generated: %s.%s",
+                    outputFile.getAbsolutePath(),
+                    newline));
+        }
 
         //remove VideoSectionPanels for listing
         results.clear();
@@ -85,7 +109,7 @@ public class MainWindow implements ActionListener, IWindow
         }
         else if ((e.getSource() == pathText))
         {
-            if (ActiveState != State.PROCESSING)
+            if (currentState != State.PROCESSING)
                 pathTextEnterPressed();
         }
         else if (e.getSource() == processButton)
@@ -108,8 +132,8 @@ public class MainWindow implements ActionListener, IWindow
     public void createAndShowGUI() {
         // Create and set up the window
         frame = new JFrame("AdCleaner");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(600, 600));
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(700, 600));
 
         // Add content to the window
         mainWindow.add(createWindowContent());
@@ -117,13 +141,14 @@ public class MainWindow implements ActionListener, IWindow
         frame.add(mainWindow);
         frame.pack();
         frame.setVisible(true);
+        frame.addWindowListener(this);
 
         //sets starting state of application
         this.setStateInitial();
     }
 
     private void setStateInitial() {
-        this.ActiveState = State.INITIAL;
+        this.currentState = State.INITIAL;
         openButton.setEnabled(true);
         processButton.setEnabled(false);
         stopButton.setEnabled(false);
@@ -131,34 +156,57 @@ public class MainWindow implements ActionListener, IWindow
 
         currentFile = null;
         pathText.setText("");
+        progressBar.setValue(0);
+        progressBar.setStringPainted(false);
+        progressBar.setVisible(false);
     }
 
     private void setStatePrepared() {
-        this.ActiveState = State.PREPARED;
+        this.currentState = State.PREPARED;
         openButton.setEnabled(true); //you can still choose another file
         processButton.setEnabled(true);
         stopButton.setEnabled(false);
         cutButton.setEnabled(false);
 
+        progressBar.setVisible(true);
         progressBar.setValue(0);
+        progressBar.setStringPainted(false);
     }
 
     private void setStateProcessing() {
-        this.ActiveState = State.PROCESSING;
+        this.currentState = State.PROCESSING;
         openButton.setEnabled(false);
         processButton.setEnabled(false);
         stopButton.setEnabled(true);
         cutButton.setEnabled(false);
         //Path is disabled in method: actionPerformed(ActionEvent e)
+
+        progressBar.setVisible(true);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
     }
 
-    private void setStateFinish() {
-        this.ActiveState = State.FINISH;
-        openButton.setEnabled(true);
+    private void setStateProcessed() {
+        this.currentState = State.PROCESSED;
         openButton.setEnabled(false);
         processButton.setEnabled(false);
         stopButton.setEnabled(false);
         cutButton.setEnabled(true);
+
+        progressBar.setVisible(true);
+        progressBar.setStringPainted(false);
+    }
+
+    private void setStateFinishing() {
+        this.currentState = State.FINISHING;
+        openButton.setEnabled(false);
+        processButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        cutButton.setEnabled(false);
+
+        progressBar.setVisible(true);
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
     }
     
     /**
@@ -175,7 +223,7 @@ public class MainWindow implements ActionListener, IWindow
         //TODO: URL
         // pathText.addActionListener(this); //Too lazy to write another class:
 
-        label = new JLabel("File or stream URL:");
+        label = new JLabel("File:");
 
         //Create the open button. If image wanted use:
         //createImageIcon("path to image") in JButton
@@ -222,6 +270,7 @@ public class MainWindow implements ActionListener, IWindow
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setToolTipText("Progress");
+        progressBar.setStringPainted(false);
 
         JPanel pageStartPanel = new JPanel();
         pageStartPanel.setLayout(new BorderLayout());
@@ -322,8 +371,6 @@ public class MainWindow implements ActionListener, IWindow
      * Action performed when start button is pressed
      */
     private void processButtonAction() {
-        this.setStateProcessing();
-
         if (currentFile != null) {
             if (!currentFile.exists()) {
                 text.append("Can't process not-existing file: " + currentFile.getAbsolutePath());
@@ -335,7 +382,9 @@ public class MainWindow implements ActionListener, IWindow
                 currentFile.getAbsolutePath(),
                 newline)
             );
+
             mediator.startVideoProcessing(currentFile);
+            this.setStateProcessing();
             return;
         }
 
@@ -343,7 +392,7 @@ public class MainWindow implements ActionListener, IWindow
         {
             //validation of URL is needed (also if URL exists)
             text.append(String.format("URL is not supported right now."));
-            this.setStateFinish();
+            this.setStateInitial();
         }
     }
 
@@ -351,13 +400,11 @@ public class MainWindow implements ActionListener, IWindow
      * Action performed when stop button is pressed
      */
     private void stopButtonAction() {
-        if (!this.mediator.stopProcessing())
-        {
-            text.append(String.format("Failed to stop the processing.%s", newline));
-            return;
-        }
-
         text.append(String.format("Stopping current action.%s", newline));
+        // Remember the state before stopping
+        State state = currentState;
+
+        // Set to initial
         this.setStateInitial();
 
         //remove buttons
@@ -367,6 +414,27 @@ public class MainWindow implements ActionListener, IWindow
             results.clear();
             showTimes();
         }
+
+        if (state == State.PROCESSING) {
+            if (!this.mediator.stopVideoProcessing())
+            {
+                text.append(String.format("Failed to stop the processing.%s", newline));
+                return;
+            }
+
+            text.append(String.format("Video processing stopped.%s", newline));
+        }
+
+        if (state == State.FINISHING) {
+            if (!this.mediator.stopCuttingAds())
+            {
+                text.append(String.format("Failed to stop the ads cutting.%s", newline));
+                return;
+            }
+
+            text.append(String.format("Ads cutting stopped.%s", newline));
+        }
+        text.append(String.format("--------------------------%s", newline));
     }
 
     /**
@@ -396,7 +464,9 @@ public class MainWindow implements ActionListener, IWindow
             panel.setEnabled(false);
         }
 
-        mediator.cutAdsFromVideo(videoSections);
+        // Initialize progress and start generating output video
+        mediator.startCuttingAds(videoSections, currentFile);
+        setStateFinishing();
     }
     
     private boolean validateCutTimes()
@@ -405,7 +475,6 @@ public class MainWindow implements ActionListener, IWindow
         {
             if (!panel.validateTimes())
             {
-
                 //warning window
                 JOptionPane.showMessageDialog(frame,
                     panel.errorMessage(),
@@ -448,7 +517,7 @@ public class MainWindow implements ActionListener, IWindow
      * Function for transforming results into panels
      * VideoSection => VideoSectionPanel
      */
-    private void prepareResultsForShowing()
+    private void showResults()
     {
         //delete old data
         results.clear();
@@ -472,9 +541,55 @@ public class MainWindow implements ActionListener, IWindow
         videoSections = videoResults;
         
         //change results
-        prepareResultsForShowing();
+        showResults();
 
         //set state to done
-        setStateFinish();
+        setStateProcessed();
+    }
+
+    @Override
+    public void windowOpened(WindowEvent e) {
+    }
+
+    @Override
+    public void windowClosing(WindowEvent e) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        if ((this.currentState == State.INITIAL)
+            || (this.currentState == State.PREPARED)
+            || (this.currentState == State.PROCESSED))
+        {
+            if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(
+                    this.frame, 
+                    "Are you sure to exit now?",
+                    "Exitting",
+                    JOptionPane.YES_NO_OPTION))
+            {
+                System.exit(0);
+            }
+        }
+        else
+        {
+            this.text.append("For exit stop current action.\n");
+        }
+    }
+
+    @Override
+    public void windowClosed(WindowEvent e) {
+    }
+
+    @Override
+    public void windowIconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeiconified(WindowEvent e) {
+    }
+
+    @Override
+    public void windowActivated(WindowEvent e) {
+    }
+
+    @Override
+    public void windowDeactivated(WindowEvent e) {
     }
 }

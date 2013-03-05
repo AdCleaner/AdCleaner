@@ -15,13 +15,17 @@ public interface IMediator {
 
     boolean startVideoProcessing(File videoFile);
 
-    boolean stopProcessing();
+    boolean stopVideoProcessing();
 
     void publishResults(List<VideoSection> videoSections);
 
     void reportProgress(int progress);
 
-    void cutAdsFromVideo(List<VideoSection> videoSections);
+    boolean startCuttingAds(List<VideoSection> videoSections, File inputVideo);
 
-    void cuttingAdsFromVideoFinished();
+    boolean stopCuttingAds();
+
+    void cuttingAdsFinished(File outputFile);
+
+    void reportActionFailed(String reason);
 }

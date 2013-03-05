@@ -11,9 +11,9 @@ import cz.cuni.adcleaner.images.ScreenShotsManager;
 public class VolumeAdDetector {
 
     private int granularity = 5;
-    private int numberOfContinousSections = 5;
-    private long callibrationIntervalLength = 20;
-    private double maxElevation = 1.2;
+    private int numberOfContinousSections = 8;
+    private long callibrationIntervalLength = 40;
+    private double maxElevation = 1.5;
     private final File video;
 
     public VolumeAdDetector(File video) {
@@ -76,8 +76,9 @@ public class VolumeAdDetector {
             callibrationIntervalLength,
             new ScreenShotsManager(video.getName())
         );
-        new MediaToolApplier(video).apply(mediaTool);
-
+        MediaToolApplier mediaToolApplier = new MediaToolApplier(video);
+		mediaToolApplier.apply(mediaTool);
+		mediaToolApplier.run();
         return mediaTool.getLouderSections();
     }
 }

@@ -35,17 +35,8 @@ public class AdFinder implements IAdFinder {
 
         // Didn't find any better way to kill the thread
         processThread.stop();
-        return true;
-    }
 
-    private List<VideoSection> getProcessingResults() {
-        return new LinkedList<VideoSection>() {{
-            add(new VideoSection(45L, 120L, TimeUnit.SECONDS));
-            add(new VideoSection(200L, 250L, TimeUnit.SECONDS));
-            add(new VideoSection(300L, 500L, TimeUnit.SECONDS));
-            add(new VideoSection(555L, 556L, TimeUnit.SECONDS));
-            add(new VideoSection(600L, 666L, TimeUnit.SECONDS));
-        }};
+        return true;
     }
 
     @Override
@@ -53,84 +44,84 @@ public class AdFinder implements IAdFinder {
         if (!videoFile.exists())
             return false;
 
-        final File video = videoFile;
-        final AdFinder adFinder = this;
-
-        processThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-            System.out.println("Processing started");
-            int granularity = 5;
-            int numberOfContinuousSections = 5;
-            long calibrationIntervalLength = 20;
-            double maxElevation = 1.2;
-            long videoLength = VideoUtils.getVideoDuration(video) / 1000000; // Seconds
-
-            manager = new ScreenShotsManager(video.getName());
-
-            VolumeElevationDetectorAdapter volumeAdapter =
-                new VolumeElevationDetectorAdapter(
-                    numberOfContinuousSections,
-                    maxElevation,
-                    granularity,
-                    calibrationIntervalLength,
-                    manager);
-
-            ProgressReportingAdapter progresReporter = new ProgressReportingAdapter(adFinder, videoLength);
-            AmplitudeGraphAdapter amplitudeGraphAdapter = new AmplitudeGraphAdapter();
-            AmplitudeMaxesGraphAdapter amplitudeMaxesGraphAdapter
-                = new AmplitudeMaxesGraphAdapter(videoLength);
-
-            try
-            {
-                // Create tool to browse the video file and register audio/video sample listeners
-                MediaToolApplier applier = new MediaToolApplier(video);
-                applier.apply(new ImageSnapAdapter(manager));
-                applier.apply(volumeAdapter);
-                applier.apply(amplitudeGraphAdapter);
-                applier.apply(amplitudeMaxesGraphAdapter);
-                applier.apply(progresReporter);
-
-                // Process the video
-                applier.run();
-
-                // Show amplitude graphs
-                System.out.println("Showing graphs...");
-                amplitudeGraphAdapter.show();
-                amplitudeMaxesGraphAdapter.show();
-
-                // Report results
-                System.out.println("publishing results...");
-                progresReporter.reportFinish();
-                mediator.publishResults(volumeAdapter.getLouderSections());
-                //TODO: debug mediator.publishResults(getProcessingResults());
-                System.out.println("Processing finished.");
-            }
-            catch (Exception ex)
-            {
-                System.out.println(ex.getMessage());
-                ex.printStackTrace();
-            }
-            finally
-            {
-               stopVideoProcessing();
-            }
-            }
-        });
+        processThread = createProcessThread(videoFile, this.mediator);
 
         // Start
         processThread.start();
         return true;
     }
 
-    @Override
-    public void registerMediator(IMediator mediator) {
-        this.mediator = mediator;
+    private Thread createProcessThread(final File video, final IMediator mediator) {
+        return new Thread(new Runnable() {
+            @Override
+            public void run() {
+                findAds(video, mediator);
+            }
+        });
+    }
+
+    private void findAds(File video, IMediator mediator) {
+        System.out.println("Processing started");
+        int granularity = 5, numberOfContinuousSections = 8, calibrationIntervalLength = 40;
+        double maxElevation = 1.5;
+        long videoLength = VideoUtils.getVideoDurationInSeconds(video);
+
+        manager = new ScreenShotsManager(video.getName());
+
+        VolumeElevationDetectorAdapter volumeAdapter =
+            new VolumeElevationDetectorAdapter(
+                numberOfContinuousSections,
+                maxElevation,
+                granularity,
+                calibrationIntervalLength,
+                manager);
+
+        ProgressReportingAdapter
+            progressReporter = new ProgressReportingAdapter(mediator, videoLength);
+        AmplitudeGraphAdapter amplitudeGraphAdapter = new AmplitudeGraphAdapter();
+        AmplitudeMaxesGraphAdapter amplitudeMaxesGraphAdapter
+            = new AmplitudeMaxesGraphAdapter(videoLength);
+
+        try
+        {
+            // Create tool to browse the video file and register audio/video sample listeners
+            MediaToolApplier applier = new MediaToolApplier(video);
+            applier.apply(new ImageSnapAdapter(manager));
+            applier.apply(volumeAdapter);
+            applier.apply(amplitudeGraphAdapter);
+            applier.apply(amplitudeMaxesGraphAdapter);
+            applier.apply(progressReporter);
+
+            // Process the video
+            applier.run();
+
+            // Show amplitude graphs
+            System.out.println("Showing graphs...");
+            amplitudeGraphAdapter.show();
+            amplitudeMaxesGraphAdapter.show();
+
+            // Report results
+            System.out.println("publishing results...");
+            progressReporter.reportFinish();
+            mediator.publishResults(volumeAdapter.getLouderSections());
+            //TODO: debugmediator.publishResults(getProcessingResults());
+            System.out.println("Processing finished.");
+        }
+        catch (Exception ex)
+        {
+            mediator.reportActionFailed("Failed to process the whole video file. More info in STDOUT.");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+        finally
+        {
+           stopVideoProcessing();
+        }
     }
 
     @Override
-    public void reportProgress(int progress) {
-        this.mediator.reportProgress(progress);
+    public void registerMediator(IMediator mediator) {
+        this.mediator = mediator;
     }
 
     private void cleanUp()
