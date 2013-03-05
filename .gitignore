@@ -1,13 +1,19 @@
 *.class
+*.mp4
 
 # Package Files #
-*.jar
 *.war
 *.ear
 
-# eclipse
+# target is also for NetBeans
+# Eclipse
 .metadata
 .settings
 target
 .classpath
 .project
+
+# IntelliJ
+.idea
+META-INF
+*.iml
